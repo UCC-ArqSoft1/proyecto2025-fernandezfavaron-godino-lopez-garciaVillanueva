@@ -21,6 +21,9 @@ El sistema está diseñado para manejar diferentes tipos de usuarios (socios y a
 - `GET /misactividades`:  
   Devuelve las actividades en las que el usuario autenticado está inscrito. Usa el mismo controlador que `/actividades`, pero filtrando por ID de usuario.
 
+- `GET /imagen`
+  Devuelve las imagenes con el listado de actividades disponible según la búsqueda del usuario.
+  
 ### 🛠️ Administración
 
 - `PUT /admin/actividades/{id}`:  
