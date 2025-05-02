@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"fmt"
@@ -19,4 +19,9 @@ func ConectarBD() {
 	}
 
 	fmt.Println("✅ Conexión exitosa con GORM")
+}
+
+// GetDB devuelve la instancia de la conexión a la base de datos
+func GetDB() *gorm.DB {
+	return DB
 }

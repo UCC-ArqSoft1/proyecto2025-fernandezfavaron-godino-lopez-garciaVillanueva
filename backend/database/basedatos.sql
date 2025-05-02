@@ -1,8 +1,10 @@
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
     contrasena_hash VARCHAR(256) NOT NULL,
-    rol ENUM('socio', 'administrador') NOT NULL
+    es_admin BOOLEAN  NOT NULL DEFAULT FALSE,
+    foto_url VARCHAR(255),
 );
 
 CREATE TABLE actividades (
