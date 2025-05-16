@@ -9,7 +9,7 @@ type Usuario struct {
 	Nombre       string    `json:"nombre"`
 	Admin        bool      `gorm:"type:enum('socio','administrador')" json:"admin"`
 	Foto         string    `json:"foto"`
-	Usuarios     []Usuario `gorm:"many2many:inscripciones;" json:"usuarios"`
+	Usuarios     []Usuario `gorm:"many2many:inscripcions;" json:"usuarios"`
 }
 
 type Actividad struct {
@@ -23,7 +23,7 @@ type Actividad struct {
 	Categoria   string      `json:"categoria"`
 	Instructor  string      `json:"instructor"`
 	FotoURL     string      `json:"fotourl"`
-	Actividades []Actividad `gorm:"many2many:inscripciones;" json:"actividades"`
+	Actividades []Actividad `gorm:"many2many:inscripcions;" json:"actividades"`
 }
 
 type Inscripcion struct {
