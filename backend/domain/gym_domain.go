@@ -31,3 +31,8 @@ type Inscripcion struct {
 	IDActividad      uint   `gorm:"primaryKey" json:"id_actividad"`
 	FechaInscripcion string `gorm:"autoCreateTime" json:"fecha_inscripcion"`
 }
+
+type LoginRequest struct {
+	Email        string `json:"email" binding:"required"`
+	PasswordHash string `json:"password" binding:"required"`
+}
