@@ -25,7 +25,7 @@ func authenticateUser(email, password string) bool {
 func generateJWT(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": username,
-		"exp": time.Now().Add(time.Hour * 72).Unix(),
+		"exp": time.Now().Add(time.Hour * 1).Unix(),
 	})
 
 	return token.SignedString(jwt_tokenprivado)

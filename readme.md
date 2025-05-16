@@ -22,7 +22,7 @@ El sistema está diseñado para manejar diferentes tipos de usuarios (socios y a
   Devuelve las actividades en las que el usuario autenticado está inscrito. Usa el mismo controlador que `/actividades`, pero filtrando por ID de usuario.
 
 - `GET /imagen`
-  Devuelve las imagenes con el listado de actividades disponible según la búsqueda del usuario.
+  Devuelve la imagen segun su url
   
 ### 🛠️ Administración
 
@@ -35,9 +35,38 @@ El sistema está diseñado para manejar diferentes tipos de usuarios (socios y a
 
 ```go
 type Usuario struct {
-    ID           int    `json:"id"`
-    Email        string `json:"email"`
-    PasswordHash string `json:"password"`
-    Nombre       string `json:"nombre"`
-    Admin        bool   `json:"admin"`
+	ID           uint      `gorm:"primaryKey" json:"id_usuario"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"password"`
+	Nombre       string    `json:"nombre"`
+	Admin        bool      `gorm:"type:enum('socio','administrador')" json:"admin"`
+	Foto         string    `json:"foto"`
+	Usuarios     []Usuario `gorm:"many2many:inscripciones;" json:"usuarios"`
 }
+```
+
+### Actividad
+```go
+type Actividad struct {
+	ID          uint        `gorm:"primaryKey" json:"id_actividad"`
+	Nombre      string      `json:"nombre"`
+	Descripcion string      `json:"descripcion"`
+	Dia         string      `json:"dia"`
+	Horario     time.Time   `json:"horario"`
+	Duracion    int         `json:"duracion"`
+	Cupos       int         `json:"cupos"`
+	Categoria   string      `json:"categoria"`
+	Instructor  string      `json:"instructor"`
+	FotoURL     string      `json:"fotourl"`
+	Actividades []Actividad `gorm:"many2many:inscripciones;" json:"actividades"`
+}
+```
+
+### Incripcion
+```go
+type Inscripcion struct {
+	IDUsuario        uint   `gorm:"primaryKey" json:"id_usuario"`
+	IDActividad      uint   `gorm:"primaryKey" json:"id_actividad"`
+	FechaInscripcion string `gorm:"autoCreateTime" json:"fecha_inscripcion"`
+}
+```
