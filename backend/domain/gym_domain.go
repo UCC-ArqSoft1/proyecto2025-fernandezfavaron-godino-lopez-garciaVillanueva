@@ -7,7 +7,7 @@ type Usuario struct {
 	Email        string    `json:"email"`
 	PasswordHash string    `json:"password"`
 	Nombre       string    `json:"nombre"`
-	Admin        bool      `gorm:"type:enum('socio','administrador')" json:"admin"`
+	IsAdmin      bool      `gorm:"type:bool" json:"admin"`
 	Foto         string    `json:"foto"`
 	Usuarios     []Usuario `gorm:"many2many:inscripcions;" json:"usuarios"`
 }
@@ -32,7 +32,7 @@ type Inscripcion struct {
 	FechaInscripcion string `gorm:"autoCreateTime" json:"fecha_inscripcion"`
 }
 
-type LoginRequest struct {
+type LoginRequestDTO struct {
 	Email        string `json:"email" binding:"required"`
 	PasswordHash string `json:"password" binding:"required"`
 }

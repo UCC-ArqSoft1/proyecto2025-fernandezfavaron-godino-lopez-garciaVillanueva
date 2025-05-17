@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"Proyecto/database"
 	"Proyecto/domain"
+	"Proyecto/services"
 	"net/http"
 	"time"
 
@@ -12,33 +14,55 @@ import (
 var jwt_tokenprivado = []byte("soy-la-contrasena-secreta")
 
 // Consultar base de datos de Franco xD
-func authenticateUser(email, password string) bool {
-	return email == "root" && password == "admin"
+func authenticateUser(email string) *domain.Usuario {
+	user, err := services.QueryUsuarioByMail(database.DB, email)
+	//Demencia?
+	if err != nil {
+		return user
+	}
+	return nil
 }
 
 // Generar token JWT
-func generateJWT(id uint) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": id,
-		"exp": time.Now().Add(time.Hour * 48).Unix(),
-	})
+type Claims struct {
+	id uint
+	jwt.RegisteredClaims
+}
+
+func generateJWTWithClaims(email string, idu uint) (string, error) {
+	claims := Claims{
+		id: idu,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   email,
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(48 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwt_tokenprivado)
 }
 
 // Revisa formato valido, contrasena correcta, genera el token y lo devuelve.
-func Logueo(contexto *gin.Context) {
-	var req domain.LoginRequest
+func Log(contexto *gin.Context) {
+	var req domain.LoginRequestDTO
+	// Revisa que el formato del JSON sea correcto
 	if err := contexto.ShouldBindJSON(&req); err != nil {
 		contexto.JSON(http.StatusBadRequest, "error: Datos inválidos")
 		return
 	}
 
-	if !authenticateUser(req.Email, req.PasswordHash) {
+	user := authenticateUser(req.Email)
+	if user == nil {
+		contexto.JSON(http.StatusUnauthorized, "error: Usuario no encontrado")
+		return
+	}
+
+	if user.PasswordHash != req.PasswordHash {
 		contexto.JSON(http.StatusUnauthorized, "error: Credenciales inválidas")
 		return
 	}
 
-	token, err := generateJWT()
+	token, err := generateJWTWithClaims(user.Email, user.ID)
 	if err != nil {
 		contexto.JSON(http.StatusInternalServerError, "error: Error generando token")
 		return

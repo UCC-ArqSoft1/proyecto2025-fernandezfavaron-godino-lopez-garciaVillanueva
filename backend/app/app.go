@@ -10,7 +10,7 @@ func StartApp() {
 	router := gin.New()
 
 	// Endpoints/Urls
-	router.POST("/login", controller.Logueo)
+	router.POST("/login", controller.Log)
 
 	router.Run(":8080")
 }
