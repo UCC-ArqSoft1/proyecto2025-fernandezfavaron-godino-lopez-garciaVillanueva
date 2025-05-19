@@ -71,6 +71,48 @@ func Log(contexto *gin.Context) {
 	contexto.JSON(http.StatusOK, gin.H{"token": token})
 }
 
+// Revisa formato valido, contrasena correcta, genera el token y lo devuelve.
+func Reg(contexto *gin.Context) {
+	var req domain.RegisterRequestDTO
+	// Revisa que el formato del JSON sea correcto
+	if err := contexto.ShouldBindJSON(&req); err != nil {
+		contexto.JSON(http.StatusBadRequest, "error: Datos inválidos")
+		return
+	}
+
+	user := authenticateUser(req.Email)
+	if user != nil {
+		contexto.JSON(http.StatusUnauthorized, "error: Usuario previamente registrado")
+		return
+	}
+
+	// Crear nuevo usuario
+	newUser := domain.Usuario{
+		Email:        req.Email,
+		PasswordHash: req.PasswordHash,
+		Nombre:       req.Nombre,
+		IsAdmin:      false,
+		Foto:         "",
+	}
+
+	// Guardar el nuevo usuario en la base de datos
+	if err, id := services.CreateUsuario(database.DB, &newUser); err != nil {
+		contexto.JSON(http.StatusInternalServerError, "error: Error creando usuario")
+		return
+	} else {
+		newUser.ID = id
+	}
+
+	// Generar token JWT
+	token, err := generateJWTWithClaims(newUser.Email, newUser.ID)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, "error: Error generando token")
+		return
+	}
+
+	contexto.JSON(http.StatusOK, gin.H{"token": token})
+}
+
 // Middleware para validar el token JWT
 func ValidateToken(contexto *gin.Context) {
 	tokenString := contexto.GetHeader("token")

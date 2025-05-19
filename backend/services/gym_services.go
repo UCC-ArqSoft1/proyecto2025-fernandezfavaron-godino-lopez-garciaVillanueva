@@ -23,3 +23,7 @@ func QueryInscripcionByIDofUsuario(db *gorm.DB, id uint) (*domain.Inscripcion, e
 	err := db.Where("id = ?", id).First(&i).Error
 	return &i, err
 }
+
+func CreateUsuario(db *gorm.DB, u *domain.Usuario) (error, uint) {
+	return db.Create(u).Error, u.ID
+}

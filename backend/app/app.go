@@ -11,6 +11,7 @@ func StartApp() {
 
 	// Endpoints/Urls
 	router.POST("/login", controller.Log)
+	router.POST("/register", controller.Reg)
 
 	router.Run(":8080")
 }
