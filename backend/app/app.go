@@ -13,5 +13,8 @@ func StartApp() {
 	router.POST("/login", controller.Log)
 	router.POST("/register", controller.Reg)
 
+	router.GET("/actividades", controller.GetActividades)
+	router.GET("/misactividades", controller.ValidateToken, controller.GetMisActividades)
+
 	router.Run(":8080")
 }

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"Proyecto/database"
 	"Proyecto/domain"
 	"Proyecto/services"
 	"net/http"
@@ -15,23 +14,23 @@ var jwt_tokenprivado = []byte("soy-la-contrasena-secreta")
 
 // Consultar base de datos de Franco xD
 func authenticateUser(email string) *domain.Usuario {
-	user, err := services.QueryUsuarioByMail(database.DB, email)
+	user, err := services.QueryUsuarioByMail(email)
 	//Demencia?
 	if err != nil {
-		return user
+		return nil
 	}
-	return nil
+	return user
 }
 
 // Generar token JWT
 type Claims struct {
-	id uint
+	ID uint
 	jwt.RegisteredClaims
 }
 
 func generateJWTWithClaims(email string, idu uint) (string, error) {
 	claims := Claims{
-		id: idu,
+		ID: idu,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   email,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(48 * time.Hour)),
@@ -67,7 +66,6 @@ func Log(contexto *gin.Context) {
 		contexto.JSON(http.StatusInternalServerError, "error: Error generando token")
 		return
 	}
-
 	contexto.JSON(http.StatusOK, gin.H{"token": token})
 }
 
@@ -96,7 +94,7 @@ func Reg(contexto *gin.Context) {
 	}
 
 	// Guardar el nuevo usuario en la base de datos
-	if err, id := services.CreateUsuario(database.DB, &newUser); err != nil {
+	if id, err := services.CreateUsuario(&newUser); err != nil {
 		contexto.JSON(http.StatusInternalServerError, "error: Error creando usuario")
 		return
 	} else {
@@ -115,14 +113,16 @@ func Reg(contexto *gin.Context) {
 
 // Middleware para validar el token JWT
 func ValidateToken(contexto *gin.Context) {
-	tokenString := contexto.GetHeader("token")
-	if tokenString == "" {
+	var req struct {
+		Token string `json:"token" binding:"required"`
+	}
+	if err := contexto.ShouldBindJSON(&req); err != nil || req.Token == "" {
 		contexto.JSON(http.StatusUnauthorized, "error: Token no proporcionado")
 		contexto.Abort()
 		return
 	}
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(req.Token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, http.ErrNotSupported
 		}
@@ -130,10 +130,44 @@ func ValidateToken(contexto *gin.Context) {
 	})
 
 	if err != nil || !token.Valid {
-		contexto.JSON(http.StatusUnauthorized, "error: Token inválido")
+		contexto.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
 		contexto.Abort()
 		return
 	}
 
+	contexto.Set("userID", token.Claims.(*Claims).ID)
+	contexto.Set("email", token.Claims.(*Claims).Subject)
 	contexto.Next()
+}
+
+func GetActividades(contexto *gin.Context) {
+	var req domain.ActividadRequestDTO
+	// Revisa que el formato del JSON sea correcto
+	if err := contexto.ShouldBindQuery(&req); err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos", "formato": req})
+		return
+	}
+	// Obtener los parámetros de búsqueda
+	actividades, err := services.GetActividades(req.Categoria, req.Nombre, req.Instructor, req.Dia, req.Horario, req.Page)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, "error: Error obteniendo actividades, cod 404")
+		return
+	}
+
+	contexto.JSON(http.StatusOK, actividades)
+}
+
+// Casi igual que el anterior pero filtrando por el id del usuario
+func GetMisActividades(contexto *gin.Context) {
+
+	// Obtener el ID del usuario desde el contexto
+	id := contexto.GetUint("userID")
+	// Obtener las actividades del usuario
+	actividades, err := services.GetActividadesByUsuarioID(id)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, "error: Error obteniendo actividades, cod 405")
+		return
+	}
+
+	contexto.JSON(http.StatusOK, actividades)
 }
