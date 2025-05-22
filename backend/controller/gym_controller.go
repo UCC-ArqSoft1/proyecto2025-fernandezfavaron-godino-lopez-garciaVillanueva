@@ -4,6 +4,7 @@ import (
 	"Proyecto/domain"
 	"Proyecto/services"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -113,16 +114,14 @@ func Reg(contexto *gin.Context) {
 
 // Middleware para validar el token JWT
 func ValidateToken(contexto *gin.Context) {
-	var req struct {
-		Token string `json:"token" binding:"required"`
-	}
-	if err := contexto.ShouldBindJSON(&req); err != nil || req.Token == "" {
-		contexto.JSON(http.StatusUnauthorized, "error: Token no proporcionado")
-		contexto.Abort()
-		return
+
+	// 1. Buscar en header Authorization: Bearer <token>
+	tokenstring := contexto.GetHeader("Authorization")
+	if len(tokenstring) > 7 && tokenstring[:7] == "Bearer " {
+		tokenstring = tokenstring[7:]
 	}
 
-	token, err := jwt.ParseWithClaims(req.Token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenstring, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, http.ErrNotSupported
 		}
@@ -136,30 +135,63 @@ func ValidateToken(contexto *gin.Context) {
 	}
 
 	contexto.Set("userID", token.Claims.(*Claims).ID)
-	contexto.Set("email", token.Claims.(*Claims).Subject)
+	contexto.Set("email", token.Claims.(*Claims).Subject) // Capaz innecesario
 	contexto.Next()
 }
 
 func GetActividades(contexto *gin.Context) {
+	// Filtros sin id
 	var req domain.ActividadRequestDTO
-	// Revisa que el formato del JSON sea correcto
 	if err := contexto.ShouldBindQuery(&req); err != nil {
-		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos", "formato": req})
-		return
-	}
-	// Obtener los parámetros de búsqueda
-	actividades, err := services.GetActividades(req.Categoria, req.Nombre, req.Instructor, req.Dia, req.Horario, req.Page)
-	if err != nil {
-		contexto.JSON(http.StatusInternalServerError, "error: Error obteniendo actividades, cod 404")
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Parámetros inválidos"})
 		return
 	}
 
+	actividades, err := services.GetActividades(req.Categoria, req.Nombre, req.Instructor, req.Dia, req.Horario, req.Page)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": "Error obteniendo actividades"})
+		return
+	}
 	contexto.JSON(http.StatusOK, actividades)
+}
+
+func GetActividadByID(contexto *gin.Context) {
+	ids := contexto.Param("id")
+	id64, err := strconv.ParseUint(ids, 10, 32)
+	if err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+	id := uint(id64)
+	// Obtener la actividad por ID
+	actividad, err := services.QueryActividadByID(id)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": "Error obteniendo actividad"})
+		return
+	}
+	contexto.JSON(http.StatusOK, actividad)
+}
+
+// Inscripcion a una actividad
+func Inscripcion(contexto *gin.Context) {
+	var i domain.InscripcionRequestDTO
+	if err := contexto.ShouldBindJSON(&i); err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+	id := contexto.GetUint("userID")
+
+	// Guardar la inscripción en la base de datos
+	if err := services.CreateInscripcion(id, i.IDActividad); err != nil {
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	contexto.JSON(http.StatusOK, "Inscripción exitosa")
+
 }
 
 // Casi igual que el anterior pero filtrando por el id del usuario
 func GetMisActividades(contexto *gin.Context) {
-
 	// Obtener el ID del usuario desde el contexto
 	id := contexto.GetUint("userID")
 	// Obtener las actividades del usuario

@@ -27,7 +27,9 @@ type Actividad struct {
 }
 
 type Inscripcion struct {
-	IDUsuario        uint   `gorm:"primaryKey" json:"id_usuario"`
-	IDActividad      uint   `gorm:"primaryKey" json:"id_actividad"`
-	FechaInscripcion string `gorm:"autoCreateTime" json:"fecha_inscripcion"`
+	IDUsuario        uint      `gorm:"primaryKey" json:"id_usuario"`
+	IDActividad      uint      `gorm:"primaryKey" json:"id_actividad"`
+	Usuario          Usuario   `gorm:"foreignKey:IDUsuario;constraint:OnDelete:CASCADE" json:"-"`
+	Actividad        Actividad `gorm:"foreignKey:IDActividad;constraint:OnDelete:CASCADE" json:"-"`
+	FechaInscripcion time.Time `gorm:"autoCreateTime" json:"fecha_inscripcion"`
 }

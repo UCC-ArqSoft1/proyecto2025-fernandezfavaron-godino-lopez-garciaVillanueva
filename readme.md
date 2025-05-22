@@ -23,6 +23,9 @@ El sistema está diseñado para manejar diferentes tipos de usuarios (socios y a
 
 - `GET /imagen`
   Devuelve la imagen segun su url
+
+- `POST /inscribirse`:  
+  Inscribe al usuario en una actividad recibiendo: token, id_usuario, id_actividad. Devuelve un error si esta llena.
   
 ### 🛠️ Administración
 

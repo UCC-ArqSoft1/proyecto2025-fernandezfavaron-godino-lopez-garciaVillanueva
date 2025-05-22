@@ -4,8 +4,25 @@ import (
 	"Proyecto/database"
 	"Proyecto/domain"
 	"errors"
-	"fmt"
+
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
+
+func actividadtoActividadDTO(a *domain.Actividad) domain.ActividadDTO {
+	return domain.ActividadDTO{
+		ID:          a.ID,
+		Nombre:      a.Nombre,
+		Descripcion: a.Descripcion,
+		Dia:         a.Dia,
+		Horario:     a.Horario,
+		Duracion:    a.Duracion,
+		Cupos:       a.Cupos,
+		Categoria:   a.Categoria,
+		Instructor:  a.Instructor,
+		FotoURL:     a.FotoURL,
+	}
+}
 
 func QueryUsuarioByMail(email string) (*domain.Usuario, error) {
 	var u domain.Usuario
@@ -13,16 +30,66 @@ func QueryUsuarioByMail(email string) (*domain.Usuario, error) {
 	return &u, err
 }
 
-func QueryActividadByID(id uint) (*domain.Actividad, error) {
+func QueryActividadByID(id uint) (*domain.ActividadDTO, error) {
 	var a domain.Actividad
 	err := database.DB.Where("id = ?", id).First(&a).Error
-	return &a, err
+	if err != nil {
+		return nil, err
+	}
+	actividadDTO := actividadtoActividadDTO(&a)
+	return &actividadDTO, nil
+
 }
 
 func QueryInscripcionByIDofUsuario(id uint) (*domain.Inscripcion, error) {
 	var i domain.Inscripcion
 	err := database.DB.Where("id = ?", id).First(&i).Error
 	return &i, err
+}
+
+func CreateInscripcion(usuarioID, actividadID uint) error {
+	return database.DB.Transaction(func(db *gorm.DB) error {
+		// Verificar si ya está inscrito
+		var c int64 // contador inscripciones, no funciona con int
+		if err := db.Model(&domain.Inscripcion{}).
+			Where("id_usuario = ? AND id_actividad = ?", usuarioID, actividadID).
+			Count(&c).Error; err != nil {
+			return err
+		}
+		if c > 0 {
+			return errors.New("el usuario ya está inscrito en esta actividad")
+		}
+
+		// Obtener la actividad con bloqueo
+		var actividad domain.Actividad
+		if err := db.Clauses(clause.Locking{Strength: "UPDATE"}).
+			First(&actividad, actividadID).Error; err != nil {
+			return err
+		}
+
+		// Verificar si hay cupos disponibles
+		if actividad.Cupos <= 0 {
+			return errors.New("no hay cupos disponibles")
+		}
+
+		// Crear la inscripción
+		inscripcion := domain.Inscripcion{
+			IDUsuario:   usuarioID,
+			IDActividad: actividadID,
+		}
+
+		if err := db.Create(&inscripcion).Error; err != nil {
+			return err
+		}
+
+		// Descontar cupo
+		actividad.Cupos -= 1
+		if err := db.Save(&actividad).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
 func CreateUsuario(u *domain.Usuario) (uint, error) {
@@ -60,18 +127,7 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 	var actividadesDTO []domain.ActividadDTO
 	err := query.Limit(defaultLimit).Offset(page * defaultLimit).Find(&actividades).Error
 	for _, actividad := range actividades {
-		adto := domain.ActividadDTO{
-			Nombre:      actividad.Nombre,
-			Descripcion: actividad.Descripcion,
-			Dia:         actividad.Dia,
-			Horario:     actividad.Horario,
-			Duracion:    actividad.Duracion,
-			Cupos:       actividad.Cupos,
-			Categoria:   actividad.Categoria,
-			Instructor:  actividad.Instructor,
-			FotoURL:     actividad.FotoURL,
-		}
-		actividadesDTO = append(actividadesDTO, adto)
+		actividadesDTO = append(actividadesDTO, actividadtoActividadDTO(&actividad))
 	}
 	return actividadesDTO, err
 }
@@ -90,19 +146,9 @@ func GetActividadesByUsuarioID(id uint) ([]domain.ActividadDTO, error) {
 	for _, id := range ids {
 		var actividad domain.Actividad
 		err = database.DB.Where("id = ?", id).First(&actividad).Error
-		actividadDTO := domain.ActividadDTO{
-			Nombre:      actividad.Nombre,
-			Descripcion: actividad.Descripcion,
-			Dia:         actividad.Dia,
-			Horario:     actividad.Horario,
-			Duracion:    actividad.Duracion,
-			Cupos:       actividad.Cupos,
-			Categoria:   actividad.Categoria,
-			Instructor:  actividad.Instructor,
-			FotoURL:     actividad.FotoURL,
-		}
+		actividadDTO := actividadtoActividadDTO(&actividad)
 		if err != nil {
-			return nil, fmt.Errorf("error al obtener actividad con ID %d: %w, pero deberia existir", id, err)
+			return nil, errors.New("error: no se encontraron actividades")
 		}
 		actividadesdto = append(actividadesdto, actividadDTO)
 	}

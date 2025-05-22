@@ -22,7 +22,12 @@ type ActividadRequestDTO struct {
 	Page       int    `json:"page"`
 }
 
+type InscripcionRequestDTO struct {
+	IDActividad uint `json:"id_actividad" binding:"required"`
+}
+
 type ActividadDTO struct {
+	ID          uint      `json:"id"`
 	Nombre      string    `json:"nombre"`
 	Descripcion string    `json:"descripcion"`
 	Dia         string    `json:"dia"`
