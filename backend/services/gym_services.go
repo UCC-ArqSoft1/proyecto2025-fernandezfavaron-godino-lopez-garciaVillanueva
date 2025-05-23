@@ -98,7 +98,7 @@ func DeleteInscripcion(usuarioID, actividadID uint) error {
 		var c int64 // contador inscripciones, no funciona con int
 		if err := db.Model(&domain.Inscripcion{}).
 			Where("id_usuario = ? AND id_actividad = ?", usuarioID, actividadID).
-			Count(&c).Error; err == nil {
+			Count(&c).Error; err != nil {
 			return err
 		}
 		if c == 0 {
