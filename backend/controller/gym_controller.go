@@ -24,13 +24,13 @@ func authenticateUser(email string) *domain.Usuario {
 }
 
 // Generar token JWT
-type Claims struct {
+type claims struct {
 	ID uint
 	jwt.RegisteredClaims
 }
 
 func generateJWTWithClaims(email string, idu uint) (string, error) {
-	claims := Claims{
+	claims := claims{
 		ID: idu,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   email,
@@ -121,7 +121,7 @@ func ValidateToken(contexto *gin.Context) {
 		tokenstring = tokenstring[7:]
 	}
 
-	token, err := jwt.ParseWithClaims(tokenstring, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenstring, &claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, http.ErrNotSupported
 		}
@@ -134,8 +134,8 @@ func ValidateToken(contexto *gin.Context) {
 		return
 	}
 
-	contexto.Set("userID", token.Claims.(*Claims).ID)
-	contexto.Set("email", token.Claims.(*Claims).Subject) // Capaz innecesario
+	contexto.Set("userID", token.Claims.(*claims).ID)
+	contexto.Set("email", token.Claims.(*claims).Subject) // Capaz innecesario
 	contexto.Next()
 }
 
@@ -187,7 +187,22 @@ func Inscripcion(contexto *gin.Context) {
 		return
 	}
 	contexto.JSON(http.StatusOK, "Inscripción exitosa")
+}
 
+func Unscripcion(contexto *gin.Context) {
+	var i domain.InscripcionRequestDTO
+	if err := contexto.ShouldBindJSON(&i); err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+	id := contexto.GetUint("userID")
+
+	// Guardar la inscripción en la base de datos
+	if err := services.DeleteInscripcion(id, i.IDActividad); err != nil {
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	contexto.JSON(http.StatusOK, "Inscripcion eliminada exitosamente")
 }
 
 // Casi igual que el anterior pero filtrando por el id del usuario

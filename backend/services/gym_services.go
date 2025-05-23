@@ -92,6 +92,40 @@ func CreateInscripcion(usuarioID, actividadID uint) error {
 	})
 }
 
+func DeleteInscripcion(usuarioID, actividadID uint) error {
+	return database.DB.Transaction(func(db *gorm.DB) error {
+		// Verificar sino está inscrito
+		var c int64 // contador inscripciones, no funciona con int
+		if err := db.Model(&domain.Inscripcion{}).
+			Where("id_usuario = ? AND id_actividad = ?", usuarioID, actividadID).
+			Count(&c).Error; err == nil {
+			return err
+		}
+		if c == 0 {
+			return errors.New("el usuario no está inscrito en esta actividad")
+		}
+
+		// Obtener la actividad con bloqueo
+		var actividad domain.Actividad
+		if err := db.Clauses(clause.Locking{Strength: "UPDATE"}).
+			First(&actividad, actividadID).Error; err != nil {
+			return err
+		}
+
+		if err := db.Where("id_usuario = ? AND id_actividad = ?", usuarioID, actividadID).
+			Delete(&domain.Inscripcion{}).Error; err != nil {
+			return err
+		}
+		// Sumar cupo
+		actividad.Cupos += 1
+		if err := db.Save(&actividad).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
 func CreateUsuario(u *domain.Usuario) (uint, error) {
 	err := database.DB.Create(&u).Error
 	return u.ID, err

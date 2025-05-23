@@ -38,3 +38,9 @@ type ActividadDTO struct {
 	Instructor  string    `json:"instructor"`
 	FotoURL     string    `json:"fotourl"`
 }
+
+type InscripcionDTO struct { //No usada por ahora
+	ActividadID uint      `json:"actividad_id"`
+	UsuarioID   uint      `json:"usuario_id"`
+	Fecha       time.Time `json:"fecha"`
+}

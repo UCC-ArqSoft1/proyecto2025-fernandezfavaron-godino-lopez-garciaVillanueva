@@ -17,6 +17,7 @@ func StartApp() {
 	router.GET("/actividades/:id", controller.GetActividadByID)
 	router.GET("/misactividades", controller.ValidateToken, controller.GetMisActividades)
 	router.POST("/inscripcion", controller.ValidateToken, controller.Inscripcion)
+	router.POST("/unscripcion", controller.ValidateToken, controller.Unscripcion)
 
 	router.Run(":8080")
 }
