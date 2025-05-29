@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
-  const [passwordHash, setPasswordHash] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const Login = () => {
       const response = await fetch('http://localhost:8080/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, passwordHash }),
+        body: JSON.stringify({ email, password }), // FALTA HASHEAR CONTRASEÑA
       });
 
       const data = await response.json();
@@ -46,8 +46,8 @@ const Login = () => {
         <input
           type="password"
           placeholder="Contraseña"
-          value={passwordHash}
-          onChange={(e) => setPasswordHash(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
         {error && <p className="error">{error}</p>}
