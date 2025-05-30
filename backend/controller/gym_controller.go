@@ -25,13 +25,15 @@ func authenticateUser(email string) *domain.Usuario {
 
 // Generar token JWT
 type claims struct {
-	ID uint
+	ID      uint
+	IsAdmin bool
 	jwt.RegisteredClaims
 }
 
-func generateJWTWithClaims(email string, idu uint) (string, error) {
+func generateJWTWithClaims(email string, idu uint, isadmin bool) (string, error) {
 	claims := claims{
-		ID: idu,
+		ID:      idu,
+		IsAdmin: isadmin,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   email,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(48 * time.Hour)),
@@ -62,12 +64,12 @@ func Log(contexto *gin.Context) {
 		return
 	}
 
-	token, err := generateJWTWithClaims(user.Email, user.ID)
+	token, err := generateJWTWithClaims(user.Email, user.ID, user.IsAdmin)
 	if err != nil {
 		contexto.JSON(http.StatusInternalServerError, "error: Error generando token")
 		return
 	}
-	contexto.JSON(http.StatusOK, gin.H{"token": token})
+	contexto.JSON(http.StatusOK, gin.H{"token": token, "admin": user.IsAdmin})
 }
 
 // Revisa formato valido, contrasena correcta, genera el token y lo devuelve.
@@ -103,13 +105,13 @@ func Reg(contexto *gin.Context) {
 	}
 
 	// Generar token JWT
-	token, err := generateJWTWithClaims(newUser.Email, newUser.ID)
+	token, err := generateJWTWithClaims(newUser.Email, newUser.ID, newUser.IsAdmin)
 	if err != nil {
 		contexto.JSON(http.StatusInternalServerError, "error: Error generando token")
 		return
 	}
 
-	contexto.JSON(http.StatusOK, gin.H{"token": token})
+	contexto.JSON(http.StatusOK, gin.H{"token": token, "admin": newUser.IsAdmin})
 }
 
 // Middleware para validar el token JWT
