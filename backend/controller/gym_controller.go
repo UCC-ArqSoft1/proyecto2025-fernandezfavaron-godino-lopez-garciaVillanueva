@@ -121,6 +121,10 @@ func ValidateToken(contexto *gin.Context) {
 	tokenstring := contexto.GetHeader("Authorization")
 	if len(tokenstring) > 7 && tokenstring[:7] == "Bearer " {
 		tokenstring = tokenstring[7:]
+	} else {
+		contexto.JSON(http.StatusUnauthorized, gin.H{"error": "Token no proporcionado"})
+		contexto.Abort()
+		return
 	}
 
 	token, err := jwt.ParseWithClaims(tokenstring, &claims{}, func(token *jwt.Token) (interface{}, error) {
