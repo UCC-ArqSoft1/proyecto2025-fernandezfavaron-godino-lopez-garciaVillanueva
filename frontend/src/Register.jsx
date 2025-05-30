@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { hashPassword } from './Hashing';
 
 
 function Register() {
@@ -14,12 +15,13 @@ function Register() {
     setMensajeError("");
 
     try {
+      const passwordHash = await hashPassword(password);
       const response = await fetch("http://localhost:8080/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email,
-          password: password,
+          password: passwordHash,
           nombre: nombre,
         }),
       });

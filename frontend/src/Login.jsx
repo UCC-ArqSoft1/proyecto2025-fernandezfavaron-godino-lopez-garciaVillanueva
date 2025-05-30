@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { hashPassword } from './Hashing';
 
 
 const Login = () => {
@@ -13,10 +14,11 @@ const Login = () => {
     setError('');
 
     try {
+      const passwordHash = await hashPassword(password);
       const response = await fetch('http://localhost:8080/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }), // FALTA HASHEAR CONTRASEÑA
+        body: JSON.stringify({ email, password: passwordHash }), // FALTA HASHEAR CONTRASEÑA
       });
 
       const data = await response.json();
