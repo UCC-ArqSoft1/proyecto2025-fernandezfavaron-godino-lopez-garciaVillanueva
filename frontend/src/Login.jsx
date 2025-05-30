@@ -51,7 +51,10 @@ const Login = () => {
           required
         />
         {error && <p className="error">{error}</p>}
-        <button type="submit">Ingresar</button>
+        <button className="slice" type="submit">
+  <span className="text">Ingresar</span>
+</button>
+
         <p>¿No tenés una cuenta? <Link to="/register">Registrate acá</Link></p>
       </form>
     </div>

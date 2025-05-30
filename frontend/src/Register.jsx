@@ -64,7 +64,9 @@ function Register() {
           required
         />
         {mensajeError && <p className="error">{mensajeError}</p>}
-        <button type="submit">Registrarse</button>
+        <button className="slice" type="submit">
+            <span className="text">Ingresar</span>
+        </button>
       </form>
     </div>
   );
