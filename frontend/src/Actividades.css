@@ -1,0 +1,126 @@
+/* CSS para Actividades - Solo estilos adicionales al Home.css */
+
+/* Contenedor principal usando la estructura del Home */
+.actividades-container {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Mensaje de error */
+.error {
+  background: rgba(245, 87, 108, 0.2);
+  border: 1px solid rgba(245, 87, 108, 0.3);
+  border-radius: 12px;
+  color: #ff6b8a;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  text-align: center;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+/* Tabla de actividades */
+.tabla-actividades {
+  width: 100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-heavy);
+  border-collapse: collapse;
+  margin-top: 2rem;
+}
+
+.tabla-actividades thead {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+}
+
+.tabla-actividades th {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 1.2rem 1rem;
+  text-align: left;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tabla-actividades th:last-child {
+  border-right: none;
+}
+
+.tabla-actividades tbody tr {
+  transition: var(--transition);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tabla-actividades tbody tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.tabla-actividades td {
+  color: var(--text-secondary);
+  padding: 1rem;
+  font-size: 0.9rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.tabla-actividades td:last-child {
+  border-right: none;
+  text-align: center;
+}
+
+/* Columna descripción con truncado */
+.descripcion-col {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botón inscribirse - personalización del btn-secondary */
+.btn-inscribir {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  min-height: auto !important;
+  margin: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .actividades-container {
+    padding: 2rem 1.5rem;
+  }
+  
+  .tabla-actividades {
+    font-size: 0.85rem;
+  }
+  
+  .tabla-actividades th,
+  .tabla-actividades td {
+    padding: 0.8rem 0.6rem;
+  }
+  
+  .descripcion-col {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actividades-container {
+    padding: 1.5rem 1rem;
+  }
+  
+  .tabla-actividades {
+    font-size: 0.8rem;
+  }
+  
+  .tabla-actividades th,
+  .tabla-actividades td {
+    padding: 0.6rem 0.4rem;
+  }
+}

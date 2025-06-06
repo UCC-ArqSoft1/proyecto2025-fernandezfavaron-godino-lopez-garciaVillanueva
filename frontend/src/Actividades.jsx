@@ -1,12 +1,8 @@
-// ActividadRow.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Home.css';        
+import './Actividades.css'; 
 
-/**
- * Componente para renderizar una fila de la tabla de actividades.
- * @param {object} props - Las propiedades del componente.
- * @param {object} props.actividad - El objeto ActividadDTO con los datos de la actividad.
- * @param {Function} props.onInscribir - Función a llamar cuando se hace clic en el botón "Inscribirse".
- */
 function ActividadRow({ actividad, onInscribir }) {
   const {
     id,
@@ -17,17 +13,19 @@ function ActividadRow({ actividad, onInscribir }) {
     duracion,
     cupos,
     categoria,
-    instructor,
-    fotourl,
+    instructor
   } = actividad;
 
   const formatHorario = (horario) => {
     if (!horario) return 'No especificado';
     try {
-      return new Date(horario).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return new Date(horario).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     } catch (error) {
-      console.error("Error formateando horario:", error);
-      return "Inválido";
+      console.error('Error formateando horario:', error);
+      return 'Inválido';
     }
   };
 
@@ -42,7 +40,11 @@ function ActividadRow({ actividad, onInscribir }) {
       <td>{categoria}</td>
       <td>{instructor}</td>
       <td>
-        <button onClick={() => onInscribir(id)} className="btn-inscribir">
+        {}
+        <button 
+          onClick={() => onInscribir(id)} 
+          className="btn btn-secondary btn-inscribir"
+        >
           Inscribirse
         </button>
       </td>
@@ -50,22 +52,14 @@ function ActividadRow({ actividad, onInscribir }) {
   );
 }
 
-/**
- * Componente para renderizar una tabla de actividades.
- * @param {object} props - Las propiedades del componente.
- * @param {Array<object>} props.actividades - Lista de objetos ActividadDTO.
- */
 function ActividadesTable({ actividades }) {
-  // Manejador para la inscripción (ejemplo)
   const handleInscribir = (actividadID) => {
     console.log(`Inscribiendo a la actividad con ID: ${actividadID}`);
-    // Aquí iría la lógica para inscribir al usuario,
-    // por ejemplo, una llamada a una API.
     alert(`Te has inscrito (simulado) a la actividad ID: ${actividadID}`);
   };
 
   if (!actividades || actividades.length === 0) {
-    return <p>No hay actividades disponibles en este momento.</p>;
+    return <p className="main-subtitle">No hay actividades disponibles en este momento.</p>;
   }
 
   return (
@@ -86,7 +80,7 @@ function ActividadesTable({ actividades }) {
       <tbody>
         {actividades.map((actividad) => (
           <ActividadRow
-            key={actividad.ID} // Es importante usar una key única para cada elemento de la lista
+            key={actividad.id}
             actividad={actividad}
             onInscribir={handleInscribir}
           />
@@ -96,9 +90,11 @@ function ActividadesTable({ actividades }) {
   );
 }
 
+// Componente principal
 function Actividades() {
   const [actividades, setActividades] = useState([]);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchActividades = async () => {
@@ -118,20 +114,27 @@ function Actividades() {
     fetchActividades();
   }, []);
 
-const handleVolver = () => {
-        navigate("/home");
-    };
+  const handleVolver = () => {
+    navigate('/home');
+  };
 
   return (
     <div className="actividades-container">
-      <h1>Actividades Disponibles</h1>
-                  <button onClick={handleVolver}>Volver a Home</button>
-
+      {/* Usamos la clase main-title del Home */}
+      <h1 className="main-title">Actividades Disponibles</h1>
+      
+      {/* Usamos las clases btn btn-primary del Home */}
+      <button 
+        onClick={handleVolver}
+        className="btn btn-primary"
+      >
+        ← Volver a Home
+      </button>
+      
       {error && <p className="error">{error}</p>}
       <ActividadesTable actividades={actividades} />
     </div>
   );
 }
-
 
 export default Actividades;

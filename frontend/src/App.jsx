@@ -11,11 +11,10 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/home" element={<Home />} />
-      <Route path="/Actividades" element={<Actividades />}/>
-      <Route path="/MisActividades" element={<MisActividades />}/>
+      <Route path="/actividades" element={<Actividades />} />
+      <Route path="/misactividades" element={<MisActividades />} />
     </Routes>
   );
 }
 
 export default App;
-

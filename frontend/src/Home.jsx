@@ -1,27 +1,34 @@
 import { useNavigate } from "react-router-dom";
+import "./Home.css"; // Importa el archivo CSS
 
 export default function Home() {
   const navigate = useNavigate();
-
+  
   return (
     <>
-      <nav style={{ padding: '1rem', background: '#202020' }}>
-        <h2 style={{ color: '#fff' }}>🏋️ Sistema de Gestión Deportiva</h2>
-      </nav>
-      <main style={{ padding: '2rem', color: '#fff' }}>
-        <h1>Página de inicio</h1>
-        <button
-          style={{ marginRight: "1em", padding: "0.7em 1.5em", borderRadius: "6px", border: "none", background: "#2d72d9", color: "#fff", cursor: "pointer" }}
-          onClick={() => navigate("/actividades")}
-        >
-          Ver Actividades
-        </button>
-        <button
-          style={{ padding: "0.7em 1.5em", borderRadius: "6px", border: "none", background: "#4fc3f7", color: "#222", cursor: "pointer" }}
-          onClick={() => navigate("/Misactividades")}
-        >
-          Mis Actividades
-        </button>
+      <main className="main-content">
+        <h1 className="main-title">Bienvenido al Centro Deportivo</h1>
+        <p className="main-subtitle">
+          Gestiona tus actividades deportivas de forma inteligente
+        </p>
+        
+        <div className="button-container">
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate("/actividades")}
+          >
+            <span className="btn-icon"></span>
+            Ver Actividades
+          </button>
+          
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate("/misactividades")}
+          >
+            <span className="btn-icon"></span>
+            Mis Actividades
+          </button>
+        </div>
       </main>
     </>
   );
