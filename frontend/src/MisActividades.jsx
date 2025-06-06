@@ -67,7 +67,7 @@ const MisActividades = () => {
     const fetchActividades = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
-        navigate("/home");
+        navigate("/");
         return;
       }
 
