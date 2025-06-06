@@ -11,7 +11,13 @@ func StartApp() {
 	router := gin.New()
 
 	// Habilitar CORS
-	router.Use(cors.Default())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
 	// Endpoints/Urls
 	router.POST("/login", controller.Log)
 	router.POST("/register", controller.Reg)
