@@ -189,7 +189,7 @@ func Inscripcion(contexto *gin.Context) {
 
 	// Guardar la inscripción en la base de datos
 	if err := services.CreateInscripcion(id, i.IDActividad); err != nil {
-		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	contexto.JSON(http.StatusOK, "Inscripción exitosa")
@@ -205,7 +205,7 @@ func Unscripcion(contexto *gin.Context) {
 
 	// Guardar la inscripción en la base de datos
 	if err := services.DeleteInscripcion(id, i.IDActividad); err != nil {
-		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	contexto.JSON(http.StatusOK, "Inscripcion eliminada exitosamente")

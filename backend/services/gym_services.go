@@ -57,7 +57,7 @@ func CreateInscripcion(usuarioID, actividadID uint) error {
 			return err
 		}
 		if c > 0 {
-			return errors.New("el usuario ya está inscrito en esta actividad")
+			return errors.New("ErrUsuarioYaInscrito")
 		}
 
 		// Obtener la actividad con bloqueo
@@ -102,7 +102,7 @@ func DeleteInscripcion(usuarioID, actividadID uint) error {
 			return err
 		}
 		if c == 0 {
-			return errors.New("el usuario no está inscrito en esta actividad")
+			return errors.New("ErrUsuarioNoInscrito")
 		}
 
 		// Obtener la actividad con bloqueo

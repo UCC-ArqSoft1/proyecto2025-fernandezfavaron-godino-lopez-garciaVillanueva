@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';        
 import './Actividades.css'; 
+import handleInscribir from './Inscripcion';
 
 function ActividadRow({ actividad, onInscribir }) {
   const {
@@ -53,10 +54,6 @@ function ActividadRow({ actividad, onInscribir }) {
 }
 
 function ActividadesTable({ actividades }) {
-  const handleInscribir = (actividadID) => {
-    console.log(`Inscribiendo a la actividad con ID: ${actividadID}`);
-    alert(`Te has inscrito (simulado) a la actividad ID: ${actividadID}`);
-  };
 
   if (!actividades || actividades.length === 0) {
     return <p className="main-subtitle">No hay actividades disponibles en este momento.</p>;
