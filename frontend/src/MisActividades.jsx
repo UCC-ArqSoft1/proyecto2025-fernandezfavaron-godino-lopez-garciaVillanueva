@@ -5,7 +5,7 @@ import './Actividades.css';
 import './Inscripcion.jsx'
 import handleInscribir from "./Inscripcion.jsx";
 // Componente específico para mostrar las actividades del usuario (sin botón de inscribirse)
-function MisActividadesTable({ actividades, mensajeSinActividades }) {
+function MisActividadesTable({ actividades,setActividades, mensajeSinActividades }) {
   const formatHorario = (horario) => {
     if (!horario) return 'No especificado';
     try {
@@ -51,11 +51,11 @@ function MisActividadesTable({ actividades, mensajeSinActividades }) {
             <td>{actividad.instructor}</td>
             <td>
               <button 
-                onClick={async () => onInscribir(actividad.id, true)
+                onClick={async () => handleInscribir(actividad.id, true)
                 .then((result) => {
                   if (typeof result === 'number') {
                     // Si result es un número, significa que se desinscribió correctamente
-                    setActividades(actividades.filter(a => a.id !== result));
+                    setActividades(actividades.filter(actividad => actividad.id !== result));
                   } else {
                     // Manejar el error de desinscripción
                     console.error(result);
@@ -125,6 +125,7 @@ const MisActividades = () => {
       
       <MisActividadesTable 
         actividades={actividades} 
+        setActividades={setActividades}
         mensajeSinActividades="No tienes actividades registradas." 
       />
     </div>

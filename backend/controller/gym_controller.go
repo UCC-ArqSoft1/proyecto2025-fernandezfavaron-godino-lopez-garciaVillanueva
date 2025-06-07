@@ -193,7 +193,7 @@ func Inscripcion(contexto *gin.Context) {
 	// Guardar la inscripción en la base de datos
 	if err := services.CreateInscripcion(id, i.IDActividad); err != nil {
 		if err.Error() == "ErrUsuarioYaInscrito" || err.Error() == "ErrUsuarioNoInscrito" {
-			contexto.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			contexto.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 			return
 		}
 		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -205,6 +205,10 @@ func Inscripcion(contexto *gin.Context) {
 func Unscripcion(contexto *gin.Context) {
 	var i domain.InscripcionRequestDTO
 	if err := contexto.ShouldBindJSON(&i); err != nil {
+		if err.Error() == "ErrUsuarioYaInscrito" || err.Error() == "ErrUsuarioNoInscrito" {
+			contexto.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+			return
+		}
 		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
 		return
 	}
