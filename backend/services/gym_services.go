@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func actividadtoActividadDTO(a *domain.Actividad) domain.ActividadDTO {
+func actividadtoActividadDTO(a *domain.Actividad, inscripto bool) domain.ActividadDTO {
 	return domain.ActividadDTO{
 		ID:          a.ID,
 		Nombre:      a.Nombre,
@@ -21,6 +21,7 @@ func actividadtoActividadDTO(a *domain.Actividad) domain.ActividadDTO {
 		Categoria:   a.Categoria,
 		Instructor:  a.Instructor,
 		FotoURL:     a.FotoURL,
+		Inscripto:   inscripto,
 	}
 }
 
@@ -36,7 +37,7 @@ func QueryActividadByID(id uint) (*domain.ActividadDTO, error) {
 	if err != nil {
 		return nil, err
 	}
-	actividadDTO := actividadtoActividadDTO(&a)
+	actividadDTO := actividadtoActividadDTO(&a, false)
 	return &actividadDTO, nil
 
 }
@@ -131,10 +132,10 @@ func CreateUsuario(u *domain.Usuario) (uint, error) {
 	return u.ID, err
 }
 
-func GetActividades(categoria, nombre, instructor, dia, horario string, page int) ([]domain.ActividadDTO, error) {
+func GetActividades(categoria, nombre, instructor, dia, horario string, page int) (int64, []domain.ActividadDTO, error) {
 	var actividades []domain.Actividad
+	var pages int64
 	query := database.DB
-
 	if categoria != "" {
 		query = query.Where("categoria = ?", categoria)
 	}
@@ -153,17 +154,20 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 	query = query.Order("id ASC")
 
 	// Limite por consultas
-	const defaultLimit = 20
-	if page > 20 || page < 0 {
+	const defaultLimit = 10
+	if page > 10 || page < 0 {
 		page = 0
 	} //Por que 20? Porque ddos, se puede aumentar sin afectar el rendimiento incluso bajo ddos pero no me parece necesario mas de 2000 actividades.
 
 	var actividadesDTO []domain.ActividadDTO
 	err := query.Limit(defaultLimit).Offset(page * defaultLimit).Find(&actividades).Error
 	for _, actividad := range actividades {
-		actividadesDTO = append(actividadesDTO, actividadtoActividadDTO(&actividad))
+		actividadesDTO = append(actividadesDTO, actividadtoActividadDTO(&actividad, false))
 	}
-	return actividadesDTO, err
+	query = query.Limit(-1).Offset(0) // Resetear el query para contar las actividades
+	query.Model(&domain.Actividad{}).Count(&pages)
+	pages = pages / defaultLimit
+	return pages, actividadesDTO, err
 }
 
 func GetActividadesByUsuarioID(id uint) ([]domain.ActividadDTO, error) {
@@ -180,11 +184,24 @@ func GetActividadesByUsuarioID(id uint) ([]domain.ActividadDTO, error) {
 	for _, id := range ids {
 		var actividad domain.Actividad
 		err = database.DB.Where("id = ?", id).First(&actividad).Error
-		actividadDTO := actividadtoActividadDTO(&actividad)
+		actividadDTO := actividadtoActividadDTO(&actividad, true)
 		if err != nil {
 			return nil, errors.New("error: no se encontraron actividades")
 		}
 		actividadesdto = append(actividadesdto, actividadDTO)
 	}
 	return actividadesdto, nil
+}
+
+func GetActividadesByUsuarioIDOnlyIDs(id uint) ([]uint, error) {
+	var inscripciones []domain.Inscripcion
+	err := database.DB.Where("id_usuario = ?", id).Find(&inscripciones).Error
+	if err != nil {
+		return nil, errors.New("error: no se encontraron inscripciones para el usuario")
+	}
+	var ids []uint
+	for _, inscripcion := range inscripciones {
+		ids = append(ids, inscripcion.IDActividad)
+	}
+	return ids, nil
 }

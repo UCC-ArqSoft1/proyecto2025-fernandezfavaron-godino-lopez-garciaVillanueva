@@ -37,6 +37,7 @@ type ActividadDTO struct {
 	Categoria   string    `json:"categoria"`
 	Instructor  string    `json:"instructor"`
 	FotoURL     string    `json:"fotourl"`
+	Inscripto   bool      `json:"inscripto"`
 }
 
 type InscripcionDTO struct { //No usada por ahora

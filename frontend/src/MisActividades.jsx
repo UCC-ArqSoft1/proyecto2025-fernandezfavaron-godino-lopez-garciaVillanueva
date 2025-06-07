@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import './Home.css';
 import './Actividades.css';
-
+import './Inscripcion.jsx'
+import handleInscribir from "./Inscripcion.jsx";
 // Componente específico para mostrar las actividades del usuario (sin botón de inscribirse)
 function MisActividadesTable({ actividades, mensajeSinActividades }) {
   const formatHorario = (horario) => {
@@ -49,7 +50,21 @@ function MisActividadesTable({ actividades, mensajeSinActividades }) {
             <td>{actividad.categoria}</td>
             <td>{actividad.instructor}</td>
             <td>
-              <span className="estado-inscrito">✓ Inscrito</span>
+              <button 
+                onClick={async () => onInscribir(actividad.id, true)
+                .then((result) => {
+                  if (typeof result === 'number') {
+                    // Si result es un número, significa que se desinscribió correctamente
+                    setActividades(actividades.filter(a => a.id !== result));
+                  } else {
+                    // Manejar el error de desinscripción
+                    console.error(result);
+                  }
+                })}
+                className="btn btn-secondary btn-desinscribir"
+                >
+                Desinscribirse
+              </button>
             </td>
           </tr>
         ))}

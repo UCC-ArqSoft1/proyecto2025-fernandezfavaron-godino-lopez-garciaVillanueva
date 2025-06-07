@@ -1,60 +1,46 @@
-import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 const handleInscribir = async (actividadID, alreadyInscribed) => {
-    if (not(alreadyInscribed)) {
-        try {
-            const response = await fetch('http://localhost:8080/inscripcion', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}` 
-                },
-                body: JSON.stringify({'id_actividad': actividadID})
-            });
+    const token = localStorage.getItem('token');
+    if (!token) {
+        useNavigate("/");
+        return;
+    }
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+    const url = alreadyInscribed
+        ? 'http://localhost:8080/unscripcion'
+        : 'http://localhost:8080/inscripcion';
 
-            const jsonResponse = await response.json();
-            if (jsonResponse === "Inscripción exitosa") {
-                return actividadID;
-            } else {
-                //Esto no deberia pasar nunca, pero por si acaso
-                return jsonResponse;
-            }
-        } catch (error) {
-            if (error == "ErrUsuarioYaInscrito")
-                return error;
-            return error;
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_actividad: actividadID })
+        });
+
+        const jsonResponse = await response.json();
+
+        if (!response.ok) {
+            const errorMsg = jsonResponse?.error?.message || jsonResponse?.error;
+            return errorMsg || 'Error desconocido del servidor.';
         }
-    } else {
-        try {
-            const response = await fetch('http://localhost:8080/unscripcion', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}` 
-                },
-                body: JSON.stringify({'id_actividad': actividadID})
-            });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+        const successMessage = alreadyInscribed
+            ? "Inscripcion eliminada exitosamente"
+            : "Inscripción exitosa";
 
-            const jsonResponse = await response.json();
-            if (jsonResponse === "Inscripcion eliminada exitosamente") {
-                return actividadID;
-            } else {
-                //Esto no deberia pasar nunca, pero por si acaso
-                return jsonResponse;
-            }
-        } catch (error) {
-            if (error == "ErrUsuarioNoInscrito")
-                return error;
-            return error;
+        if (jsonResponse === successMessage) {
+            return actividadID;
+        } else {
+            // Esto no debería pasar, pero lo devolvemos por si acaso
+            return jsonResponse;
         }
+    } catch (error) {
+        console.error("Error de red:", error);
+        return "Error de red o del servidor. Intenta más tarde.";
     }
 };
-            
+
 export default handleInscribir;

@@ -153,12 +153,15 @@ func GetActividades(contexto *gin.Context) {
 		return
 	}
 
-	actividades, err := services.GetActividades(req.Categoria, req.Nombre, req.Instructor, req.Dia, req.Horario, req.Page)
+	pages, actividades, err := services.GetActividades(req.Categoria, req.Nombre, req.Instructor, req.Dia, req.Horario, req.Page)
 	if err != nil {
 		contexto.JSON(http.StatusInternalServerError, gin.H{"error": "Error obteniendo actividades"})
 		return
 	}
-	contexto.JSON(http.StatusOK, actividades)
+	contexto.JSON(http.StatusOK, gin.H{
+		"pages":       pages,
+		"actividades": actividades,
+	})
 }
 
 func GetActividadByID(contexto *gin.Context) {
@@ -223,4 +226,17 @@ func GetMisActividades(contexto *gin.Context) {
 	}
 
 	contexto.JSON(http.StatusOK, actividades)
+}
+
+func GetInscripciones(contexto *gin.Context) {
+	// Obtener el ID del usuario desde el contexto
+	id := contexto.GetUint("userID")
+	// Obtener las inscripciones del usuario
+	inscripciones, err := services.GetActividadesByUsuarioIDOnlyIDs(id)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, "error: Error obteniendo inscripciones, cod 405")
+		return
+	}
+
+	contexto.JSON(http.StatusOK, inscripciones)
 }

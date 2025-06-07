@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, act } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Home.css';        
-import './Actividades.css'; 
+import './Home.css';
+import './Actividades.css';
 import handleInscribir from './Inscripcion';
 
 function ActividadRow({ actividad, onInscribir }) {
@@ -41,12 +41,32 @@ function ActividadRow({ actividad, onInscribir }) {
       <td>{categoria}</td>
       <td>{instructor}</td>
       <td>
-        {}
-        <button 
-          onClick={() => onInscribir(id)} 
-          className="btn btn-secondary btn-inscribir"
+        { }
+        <button
+          onClick={() => onInscribir(id, actividad.alreadyInscribed)
+            .then((result) => {
+              if (typeof result === 'number') {
+                // Si result es un número, significa que se inscribió o desinscribió correctamente
+                actividad.alreadyInscribed = !actividad.alreadyInscribed;
+              } else {
+                if (typeof result === 'string') {
+                  if (result == "ErrUsuarioYaInscripto"){
+                    actividad.alreadyInscribed = true
+                  }
+                  if (result == "ErrUsuarioNoInscripto"){
+                    actividad.alreadyInscribed = false
+                  }
+                }
+              }
+            })
+            .catch((error) => {
+              console.error('Error al inscribir/desinscribir:', error);
+              alert('Ocurrió un error al procesar tu solicitud. Inténtalo más tarde.');
+            })
+          }
+          className="btn btn-secondary btn-inscripcion"
         >
-          Inscribirse
+          {actividad.alreadyInscribed ? 'Desinscribirse' : 'Inscribirse'}
         </button>
       </td>
     </tr>
@@ -79,7 +99,7 @@ function ActividadesTable({ actividades }) {
           <ActividadRow
             key={actividad.id}
             actividad={actividad}
-            onInscribir={handleInscribir}
+            onInscribir={(id, alreadyInscribed) => handleInscribir(id, alreadyInscribed)}
           />
         ))}
       </tbody>
@@ -90,26 +110,79 @@ function ActividadesTable({ actividades }) {
 // Componente principal
 function Actividades() {
   const [actividades, setActividades] = useState([]);
+  const [inscripciones, setInscripciones] = useState([]);
+  const [pages, setPages] = useState(1);
+  const [actualPage, setActualPage] = useState(1);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchActividades = async () => {
+    const fetchInscripciones = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/");
+        return;
+      }
       try {
-        const response = await fetch('http://localhost:8080/actividades');
+        const response = await fetch("http://localhost:8080/inscripciones", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+          throw new Error("Error al obtener las actividades inscritas");
+        }
+        const data = await response.json();
+        setInscripciones(data);
+      } catch (error) {
+        console.error("Error:", error);
+        setError("No se pudieron cargar tus inscripciones. Inténtalo más tarde.");
+      }
+    };
+
+    fetchInscripciones();
+  }, []);
+
+  useEffect(() => {
+    const fetchActividades = async (page = 1) => {
+      try {
+        const params = new URLSearchParams({
+          categoria: "",
+          nombre: "",
+          instructor: "",
+          dia: "",
+          horario: "",
+          page: page.toString()
+        });
+
+        const response = await fetch(`http://localhost:8080/actividades?${params.toString()}`);
+
         if (!response.ok) {
           throw new Error('Error al obtener las actividades');
         }
+
         const data = await response.json();
-        setActividades(data);
+
+        if (!Array.isArray(data.actividades)) {
+          console.error('Formato inválido:', data);
+          throw new Error('El servidor devolvió un formato inesperado.');
+        }
+
+        const actividadesMarcadas = data.actividades.map((actividad) => ({
+          ...actividad,
+          alreadyInscribed: inscripciones.some(
+            (insc) => insc.id_actividad === actividad.id
+          )
+        }));
+
+        setActividades(actividadesMarcadas);
+        setPages(data.pages || 1);
       } catch (err) {
         console.error(err);
         setError('No se pudieron cargar las actividades. Inténtalo más tarde.');
       }
     };
 
-    fetchActividades();
-  }, []);
+    fetchActividades(actualPage);
+  }, [actualPage, inscripciones]);
 
   const handleVolver = () => {
     navigate('/home');
@@ -119,18 +192,38 @@ function Actividades() {
     <div className="actividades-container">
       {/* Usamos la clase main-title del Home */}
       <h1 className="main-title">Actividades Disponibles</h1>
-      
+
       {/* Usamos las clases btn btn-primary del Home */}
-      <button 
+      <button
         onClick={handleVolver}
         className="btn btn-primary"
       >
         ← Volver a Home
       </button>
-      
+
       {error && <p className="error">{error}</p>}
       <ActividadesTable actividades={actividades} />
+      <div className="pagination-buttons">
+        <button
+          className="btn btn-secondary"
+          onClick={() => setActualPage(prev => Math.max(prev - 1, 1))}
+          disabled={actualPage === 1}
+        >
+          ← Anterior
+        </button>
+        <span style={{ margin: '0 10px' }}>Página {actualPage} de {pages}</span>
+        <button
+          className="btn btn-secondary"
+          onClick={() => setActualPage(prev => Math.min(prev + 1, pages))}
+          disabled={actualPage === pages}
+        >
+          Siguiente →
+        </button>
+      </div>
+
     </div>
+    // Aquí podrías agregar la paginación si es necesario
+
   );
 }
 

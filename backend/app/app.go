@@ -27,6 +27,7 @@ func StartApp() {
 	router.GET("/actividades", controller.GetActividades)
 	router.GET("/actividades/:id", controller.GetActividadByID)
 	router.GET("/misactividades", controller.ValidateToken, controller.GetMisActividades)
+	router.GET("/inscripciones", controller.ValidateToken, controller.GetInscripciones)
 	router.POST("/inscripcion", controller.ValidateToken, controller.Inscripcion)
 	router.POST("/unscripcion", controller.ValidateToken, controller.Unscripcion)
 
