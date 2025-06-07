@@ -192,6 +192,10 @@ func Inscripcion(contexto *gin.Context) {
 
 	// Guardar la inscripción en la base de datos
 	if err := services.CreateInscripcion(id, i.IDActividad); err != nil {
+		if err.Error() == "ErrUsuarioYaInscrito" || err.Error() == "ErrUsuarioNoInscrito" {
+			contexto.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
 		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
