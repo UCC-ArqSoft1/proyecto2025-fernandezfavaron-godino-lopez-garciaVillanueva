@@ -58,7 +58,6 @@
 
 .tabla-actividades tbody tr:hover {
   background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px);
 }
 
 .tabla-actividades td {
@@ -83,14 +82,46 @@
 }
 
 /* Botón inscribirse - personalización del btn-secondary */
-.btn-inscribir {
+.btn-inscripcion {
   padding: 0.5rem 1rem !important;
   font-size: 0.9rem !important;
   min-height: auto !important;
   margin: 0 !important;
+  width: 120px; /* Para que ambos textos se vean bien */
+}
+
+/* Paginación */
+.pagination-buttons {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination-buttons span {
+  color: var(--text-primary);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  white-space: nowrap;
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .tabla-actividades {
+    font-size: 0.9rem;
+  }
+  
+  .descripcion-col {
+    max-width: 150px;
+  }
+}
+
 @media (max-width: 768px) {
   .actividades-container {
     padding: 2rem 1.5rem;
@@ -108,6 +139,21 @@
   .descripcion-col {
     max-width: 120px;
   }
+  
+  .btn-inscripcion {
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.8rem !important;
+    min-width: 100px;
+  }
+  
+  .pagination-buttons {
+    gap: 0.5rem;
+  }
+  
+  .pagination-buttons span {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -123,12 +169,95 @@
   .tabla-actividades td {
     padding: 0.6rem 0.4rem;
   }
+  
+  .descripcion-col {
+    max-width: 100px;
+  }
+  
+  .btn-inscripcion {
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.75rem !important;
+    min-width: 90px;
+  }
+  
+  /* Para móviles muy pequeños, podríamos hacer la tabla scrolleable */
+  .tabla-actividades {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .tabla-actividades thead,
+  .tabla-actividades tbody,
+  .tabla-actividades th,
+  .tabla-actividades td,
+  .tabla-actividades tr {
+    display: block;
+  }
+  
+  .tabla-actividades thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  .tabla-actividades tbody tr {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+  }
+  
+  .tabla-actividades td {
+    border: none;
+    position: relative;
+    padding-left: 35% !important;
+    text-align: right;
+    white-space: normal;
+  }
+  
+  .tabla-actividades td:before {
+    content: attr(data-label) ": ";
+    position: absolute;
+    left: 6px;
+    width: 30%;
+    text-align: left;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  
+  .tabla-actividades td:last-child {
+    text-align: center;
+    padding-left: 1rem !important;
+  }
+  
+  .tabla-actividades td:last-child:before {
+    content: "";
+  }
 }
- 
-.pagination-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+
+/* Estados de carga/loading */
+.loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Animaciones suaves para cambios de estado */
+.tabla-actividades tbody tr {
+  animation: fadeInRow 0.3s ease-out;
+}
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

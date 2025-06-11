@@ -1,4 +1,4 @@
-import React, { useState, useEffect, act } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Home.css';
 import './Actividades.css';
@@ -14,19 +14,37 @@ function ActividadRow({ actividad, onInscribir }) {
     duracion,
     cupos,
     categoria,
-    instructor
+    instructor,
+    alreadyInscribed
   } = actividad;
 
-  const formatHorario = (horario) => {
-    if (!horario) return 'No especificado';
+  // Estado local: true → inscrito, false → no inscrito
+  const [inscribed, setInscribed] = React.useState(alreadyInscribed);
+
+  /** Formatea el horario "HH:MM" o devuelve “Inválido” */
+  const formatHorario = (h) => {
+    if (!h) return 'No especificado';
     try {
-      return new Date(horario).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch (error) {
-      console.error('Error formateando horario:', error);
+      return new Date(h).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
       return 'Inválido';
+    }
+  };
+
+  /** Inscribe o desinscribe, y actualiza el estado si la API responde ok */
+  const toggleInscripcion = async () => {
+    try {
+      const result = await onInscribir(id, inscribed);
+      if (
+        typeof result === 'number' ||
+        result === 'ErrUsuarioYaInscripto' ||
+        result === 'ErrUsuarioNoInscripto'
+      ) {
+        setInscribed(!inscribed);
+      }
+    } catch (error) {
+      console.error('Error al (des)inscribir:', error);
+      alert('Ocurrió un error al procesar tu solicitud. Inténtalo más tarde.');
     }
   };
 
@@ -41,32 +59,11 @@ function ActividadRow({ actividad, onInscribir }) {
       <td>{categoria}</td>
       <td>{instructor}</td>
       <td>
-        { }
         <button
-          onClick={() => onInscribir(id, actividad.alreadyInscribed)
-            .then((result) => {
-              if (typeof result === 'number') {
-                // Si result es un número, significa que se inscribió o desinscribió correctamente
-                actividad.alreadyInscribed = !actividad.alreadyInscribed;
-              } else {
-                if (typeof result === 'string') {
-                  if (result == "ErrUsuarioYaInscripto"){
-                    actividad.alreadyInscribed = true
-                  }
-                  if (result == "ErrUsuarioNoInscripto"){
-                    actividad.alreadyInscribed = false
-                  }
-                }
-              }
-            })
-            .catch((error) => {
-              console.error('Error al inscribir/desinscribir:', error);
-              alert('Ocurrió un error al procesar tu solicitud. Inténtalo más tarde.');
-            })
-          }
+          onClick={toggleInscripcion}
           className="btn btn-secondary btn-inscripcion"
         >
-          {actividad.alreadyInscribed ? 'Desinscribirse' : 'Inscribirse'}
+          {inscribed ? 'Inscrito' : 'Inscribirse'}
         </button>
       </td>
     </tr>
@@ -74,7 +71,6 @@ function ActividadRow({ actividad, onInscribir }) {
 }
 
 function ActividadesTable({ actividades }) {
-
   if (!actividades || actividades.length === 0) {
     return <p className="main-subtitle">No hay actividades disponibles en este momento.</p>;
   }
@@ -95,10 +91,10 @@ function ActividadesTable({ actividades }) {
         </tr>
       </thead>
       <tbody>
-        {actividades.map((actividad) => (
+        {actividades.map((act) => (
           <ActividadRow
-            key={actividad.id}
-            actividad={actividad}
+            key={act.id}
+            actividad={act}
             onInscribir={(id, alreadyInscribed) => handleInscribir(id, alreadyInscribed)}
           />
         ))}
@@ -107,7 +103,6 @@ function ActividadesTable({ actividades }) {
   );
 }
 
-// Componente principal
 function Actividades() {
   const [actividades, setActividades] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
@@ -116,114 +111,73 @@ function Actividades() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Carga de inscripciones existentes
   useEffect(() => {
     const fetchInscripciones = async () => {
       const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/");
-        return;
-      }
+      if (!token) { navigate("/"); return; }
       try {
-        const response = await fetch("http://localhost:8080/inscripciones", {
+        const resp = await fetch("http://localhost:8080/inscripciones", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) {
-          throw new Error("Error al obtener las actividades inscritas");
-        }
-        const data = await response.json();
-        setInscripciones(data);
-      } catch (error) {
-        console.error("Error:", error);
+        if (!resp.ok) throw new Error();
+        setInscripciones(await resp.json());
+      } catch {
         setError("No se pudieron cargar tus inscripciones. Inténtalo más tarde.");
       }
     };
-
     fetchInscripciones();
-  }, []);
+  }, [navigate]);
 
+  // Carga de actividades y marcación de ya inscritos
   useEffect(() => {
     const fetchActividades = async (page = 1) => {
       try {
-        const params = new URLSearchParams({
-          categoria: "",
-          nombre: "",
-          instructor: "",
-          dia: "",
-          horario: "",
-          page: page.toString()
-        });
-
-        const response = await fetch(`http://localhost:8080/actividades?${params.toString()}`);
-
-        if (!response.ok) {
-          throw new Error('Error al obtener las actividades');
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data.actividades)) {
-          console.error('Formato inválido:', data);
-          throw new Error('El servidor devolvió un formato inesperado.');
-        }
-
-        const actividadesMarcadas = data.actividades.map((actividad) => ({
-          ...actividad,
-          alreadyInscribed: inscripciones.some(
-            (insc) => insc.id_actividad === actividad.id
-          )
+        const params = new URLSearchParams({ page: String(page) });
+        const resp = await fetch(`http://localhost:8080/actividades?${params}`);
+        if (!resp.ok) throw new Error();
+        const data = await resp.json();
+        const marcadas = data.actividades.map((a) => ({
+          ...a,
+          alreadyInscribed: inscripciones.some(i => i.id_actividad === a.id)
         }));
-
-        setActividades(actividadesMarcadas);
+        setActividades(marcadas);
         setPages(data.pages || 1);
-      } catch (err) {
-        console.error(err);
+      } catch {
         setError('No se pudieron cargar las actividades. Inténtalo más tarde.');
       }
     };
-
     fetchActividades(actualPage);
   }, [actualPage, inscripciones]);
 
-  const handleVolver = () => {
-    navigate('/home');
-  };
-
   return (
     <div className="actividades-container">
-      {/* Usamos la clase main-title del Home */}
       <h1 className="main-title">Actividades Disponibles</h1>
-
-      {/* Usamos las clases btn btn-primary del Home */}
-      <button
-        onClick={handleVolver}
-        className="btn btn-primary"
-      >
+      <button onClick={() => navigate('/home')} className="btn btn-primary">
         ← Volver a Home
       </button>
-
       {error && <p className="error">{error}</p>}
       <ActividadesTable actividades={actividades} />
       <div className="pagination-buttons">
         <button
           className="btn btn-secondary"
-          onClick={() => setActualPage(prev => Math.max(prev - 1, 1))}
+          onClick={() => setActualPage(p => Math.max(p - 1, 1))}
           disabled={actualPage === 1}
         >
           ← Anterior
         </button>
-        <span style={{ margin: '0 10px' }}>Página {actualPage} de {pages}</span>
+        <span style={{ margin: '0 10px' }}>
+          Página {actualPage} de {pages}
+        </span>
         <button
           className="btn btn-secondary"
-          onClick={() => setActualPage(prev => Math.min(prev + 1, pages))}
+          onClick={() => setActualPage(p => Math.min(p + 1, pages))}
           disabled={actualPage === pages}
         >
           Siguiente →
         </button>
       </div>
-
     </div>
-    // Aquí podrías agregar la paginación si es necesario
-
   );
 }
 
