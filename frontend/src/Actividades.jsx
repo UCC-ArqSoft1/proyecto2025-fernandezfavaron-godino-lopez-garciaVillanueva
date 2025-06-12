@@ -187,7 +187,6 @@ function Actividades() {
           inscripto: inscripciones.includes(a.id) // <-- este campo es el que usas en ActividadRow
         }));
         setActividades(marcadas);
-        setActividades(marcadas);
         setPages(data.pages || 1);
       } catch {
         setError('No se pudieron cargar las actividades. Inténtalo más tarde.');
