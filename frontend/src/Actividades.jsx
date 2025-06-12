@@ -109,7 +109,46 @@ function Actividades() {
   const [pages, setPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
   const [error, setError] = useState('');
+  const [busqueda, setBusqueda] = useState('');
+  const [categoria, setCategoria] = useState('Todas');
   const navigate = useNavigate();
+
+  function filtrarActividades(lista, texto, categoriaSeleccionada) {
+    if (!lista || lista.length === 0) return [];
+
+    const textoLower = texto.toLowerCase();
+
+    return lista.filter((actividad) => {
+      let nombre = '';
+      let descripcion = '';
+      let instructor = '';
+      let categoriaAct = '';
+
+      if (actividad && actividad.nombre) {
+        nombre = actividad.nombre.toLowerCase();
+      }
+      if (actividad && actividad.descripcion) {
+        descripcion = actividad.descripcion.toLowerCase();
+      }
+      if (actividad && actividad.instructor) {
+        instructor = actividad.instructor.toLowerCase();
+      }
+      if (actividad && actividad.categoria) {
+        categoriaAct = actividad.categoria.toLowerCase();
+      }
+
+      const coincideTexto =
+        texto === '' ||
+        nombre.includes(textoLower) ||
+        descripcion.includes(textoLower) ||
+        instructor.includes(textoLower);
+
+      const coincideCategoria =
+        categoriaSeleccionada === 'Todas' || categoriaSeleccionada === actividad.categoria;
+
+      return coincideTexto && coincideCategoria;
+    });
+  }
 
   // Carga de inscripciones existentes
   useEffect(() => {
@@ -150,14 +189,49 @@ function Actividades() {
     fetchActividades(actualPage);
   }, [actualPage, inscripciones]);
 
+  // Filtrar las actividades
+  const actividadesFiltradas = filtrarActividades(actividades, busqueda, categoria);
+
+  // JSX para renderizar:
   return (
     <div className="actividades-container">
+      {/* Filtros */}
       <h1 className="main-title">Actividades Disponibles</h1>
-      <button onClick={() => navigate('/home')} className="btn btn-primary">
+      <div className="filtros">
+        <button onClick={() => navigate('/home')} className="btn btn-primary">
         ← Volver a Home
       </button>
-      {error && <p className="error">{error}</p>}
-      <ActividadesTable actividades={actividades} />
+        <input 
+          type="text" 
+          placeholder="Buscar actividad..." 
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          className="input-busqueda"
+        />
+        
+        <select 
+          value={categoria} 
+          onChange={(e) => setCategoria(e.target.value)}
+          className="select-categoria"
+        >
+          <option value="Todas">Todas las categorías </option>
+          <option value="Fitness">Fitness</option>
+          <option value="Yoga">Yoga</option>
+          <option value="Natación">Natación</option>
+        </select>
+        
+        <button 
+          onClick={() => { setBusqueda(''); setCategoria('Todas'); }}
+          className="btn-limpiar"
+        >
+          Limpiar
+        </button>
+      </div>
+
+      {/* Tu tabla de actividades */}
+      <ActividadesTable actividades={actividadesFiltradas} />
+
+      {/* Paginación */}
       <div className="pagination-buttons">
         <button
           className="btn btn-secondary"
@@ -182,3 +256,4 @@ function Actividades() {
 }
 
 export default Actividades;
+
