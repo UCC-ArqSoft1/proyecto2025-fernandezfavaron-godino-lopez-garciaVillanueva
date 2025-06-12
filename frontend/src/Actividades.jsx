@@ -15,11 +15,16 @@ function ActividadRow({ actividad, onInscribir }) {
     cupos,
     categoria,
     instructor,
-    alreadyInscribed
+    inscripto: alreadyInscribed,
   } = actividad;
 
   // Estado local: true → inscrito, false → no inscrito
   const [inscribed, setInscribed] = React.useState(alreadyInscribed);
+
+  // Sincroniza el estado local si cambia el prop
+  React.useEffect(() => {
+    setInscribed(alreadyInscribed);
+  }, [alreadyInscribed]);
 
   /** Formatea el horario "HH:MM" o devuelve “Inválido” */
   const formatHorario = (h) => {
@@ -35,12 +40,13 @@ function ActividadRow({ actividad, onInscribir }) {
   const toggleInscripcion = async () => {
     try {
       const result = await onInscribir(id, inscribed);
+      if (typeof result === 'number') { setInscribed(!inscribed); }
       if (
-        typeof result === 'number' ||
-        result === 'ErrUsuarioYaInscripto' ||
-        result === 'ErrUsuarioNoInscripto'
+        result == "ErrUsuarioYaInscrito" ||
+        result == "ErrUsuarioNoInscrito"
       ) {
         setInscribed(!inscribed);
+        console.log("No se esperaba:", result);
       }
     } catch (error) {
       console.error('Error al (des)inscribir:', error);
@@ -166,7 +172,7 @@ function Actividades() {
       }
     };
     fetchInscripciones();
-  }, [navigate]);
+  }, [actualPage, navigate]);
 
   // Carga de actividades y marcación de ya inscritos
   useEffect(() => {
@@ -178,8 +184,9 @@ function Actividades() {
         const data = await resp.json();
         const marcadas = data.actividades.map((a) => ({
           ...a,
-          alreadyInscribed: inscripciones.some(i => i.id_actividad === a.id)
+          inscripto: inscripciones.includes(a.id) // <-- este campo es el que usas en ActividadRow
         }));
+        setActividades(marcadas);
         setActividades(marcadas);
         setPages(data.pages || 1);
       } catch {
@@ -199,18 +206,18 @@ function Actividades() {
       <h1 className="main-title">Actividades Disponibles</h1>
       <div className="filtros">
         <button onClick={() => navigate('/home')} className="btn btn-primary">
-        ← Volver a Home
-      </button>
-        <input 
-          type="text" 
-          placeholder="Buscar actividad..." 
+          ← Volver a Home
+        </button>
+        <input
+          type="text"
+          placeholder="Buscar actividad..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
           className="input-busqueda"
         />
-        
-        <select 
-          value={categoria} 
+
+        <select
+          value={categoria}
           onChange={(e) => setCategoria(e.target.value)}
           className="select-categoria"
         >
@@ -219,8 +226,8 @@ function Actividades() {
           <option value="Yoga">Yoga</option>
           <option value="Natación">Natación</option>
         </select>
-        
-        <button 
+
+        <button
           onClick={() => { setBusqueda(''); setCategoria('Todas'); }}
           className="btn-limpiar"
         >

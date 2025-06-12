@@ -22,6 +22,7 @@ const handleInscribir = async (actividadID, alreadyInscribed) => {
 
         const jsonResponse = await response.json();
 
+
         if (!response.ok) {
             const errorMsg = jsonResponse?.error?.message || jsonResponse?.error;
             return errorMsg || 'Error desconocido del servidor.';
