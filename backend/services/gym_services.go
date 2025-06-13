@@ -4,6 +4,7 @@ import (
 	"Proyecto/database"
 	"Proyecto/domain"
 	"errors"
+	"math"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -151,6 +152,7 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 	if horario != "" {
 		query = query.Where("horario = ?", horario)
 	}
+	query.Model(&domain.Actividad{}).Count(&pages)
 	query = query.Order("id ASC")
 
 	// Limite por consultas
@@ -164,9 +166,7 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 	for _, actividad := range actividades {
 		actividadesDTO = append(actividadesDTO, actividadtoActividadDTO(&actividad, false))
 	}
-	query = query.Limit(-1).Offset(0) // Resetear el query para contar las actividades
-	query.Model(&domain.Actividad{}).Count(&pages)
-	pages = pages / defaultLimit
+	pages = int64(math.Ceil(float64(pages) / float64(defaultLimit)))
 	return pages, actividadesDTO, err
 }
 
