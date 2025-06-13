@@ -14,12 +14,12 @@ type RegisterRequestDTO struct {
 }
 
 type ActividadRequestDTO struct {
-	Categoria  string `json:"categoria"`
-	Nombre     string `json:"nombre"`
-	Instructor string `json:"instructor"`
-	Dia        string `json:"dia"`
-	Horario    string `json:"horario"`
-	Page       int    `json:"page"`
+	Categoria  string `form:"categoria"`
+	Nombre     string `form:"nombre"`
+	Instructor string `form:"instructor"`
+	Dia        string `form:"dia"`
+	Horario    string `form:"horario"`
+	Page       int    `form:"page"`
 }
 
 type InscripcionRequestDTO struct {

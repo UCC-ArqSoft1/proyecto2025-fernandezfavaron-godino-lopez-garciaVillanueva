@@ -140,7 +140,7 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 		query = query.Where("categoria = ?", categoria)
 	}
 	if nombre != "" {
-		query = query.Where("nombre = ?", nombre)
+		query = query.Where("nombre LIKE ?", "%"+nombre+"%")
 	}
 	if instructor != "" {
 		query = query.Where("instructor = ?", instructor)
@@ -155,12 +155,12 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 
 	// Limite por consultas
 	const defaultLimit = 10
-	if page > 10 || page < 0 {
-		page = 0
+	if page > 10 || page < 1 {
+		page = 1
 	} //Por que 20? Porque ddos, se puede aumentar sin afectar el rendimiento incluso bajo ddos pero no me parece necesario mas de 2000 actividades.
 
 	var actividadesDTO []domain.ActividadDTO
-	err := query.Limit(defaultLimit).Offset(page * defaultLimit).Find(&actividades).Error
+	err := query.Limit(defaultLimit).Offset((page - 1) * defaultLimit).Find(&actividades).Error
 	for _, actividad := range actividades {
 		actividadesDTO = append(actividadesDTO, actividadtoActividadDTO(&actividad, false))
 	}
