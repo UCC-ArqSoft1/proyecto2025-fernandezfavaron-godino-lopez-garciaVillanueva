@@ -9,7 +9,7 @@
 }
 
 /* Mensaje de error */
-.error {
+.error-message {
   background: rgba(245, 87, 108, 0.2);
   border: 1px solid rgba(245, 87, 108, 0.3);
   border-radius: 12px;
@@ -87,11 +87,7 @@
   font-size: 0.9rem !important;
   min-height: auto !important;
   margin: 0 !important;
-  width: 120px; /* Para que ambos textos se vean bien */.select-categoria {
-    padding: 0.3rem 0.6rem !important;
-    font-size: 0.75rem !important;
-    min-width: 90px;
-}
+  width: 120px; /* Para que ambos textos se vean bien */
 }
 
 /* Paginación */
@@ -115,6 +111,183 @@
   white-space: nowrap;
 }
 
+/* Contenedor de filtros */
+.filtros {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 25px;
+  background: rgba(139, 124, 246, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 124, 246, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.filtros > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.filtros > div > h4 {
+  width: 100%;
+  color: var(--text-primary);
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+}
+
+/* Botón principal (Volver) */
+.btn.btn-primary {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #8b7cf6, #667eea);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(139, 124, 246, 0.3);
+}
+
+.btn.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 124, 246, 0.4);
+  background: linear-gradient(135deg, #7c6ef7, #5a67d8);
+}
+
+/* Botón secundario */
+.btn.btn-secondary {
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+}
+
+.btn.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.btn.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Campo de búsqueda */
+.input-busqueda {
+  padding: 14px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: all 0.3s ease;
+  outline: none;
+  min-width: 200px;
+}
+
+.input-busqueda::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.input-busqueda:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Select de categoría */
+.select-categoria {
+  padding: 14px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #a78bfa, #c084fc);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  min-width: 200px;
+  font-weight: 600;
+}
+
+.select-categoria option {
+  background: #4c1d95;
+  color: #fff;
+  padding: 10px;
+}
+
+.select-categoria:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(167, 139, 250, 0.4);
+}
+
+.select-categoria:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.4);
+}
+
+/* Botón limpiar */
+.btn-limpiar {
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+
+.btn-limpiar:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Estados de carga/loading */
+.loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Animaciones suaves para cambios de estado */
+.tabla-actividades tbody tr {
+  animation: fadeInRow 0.3s ease-out;
+}
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .tabla-actividades {
@@ -124,11 +297,31 @@
   .descripcion-col {
     max-width: 150px;
   }
+  
+  .input-busqueda,
+  .select-categoria {
+    min-width: 150px;
+  }
 }
 
 @media (max-width: 768px) {
   .actividades-container {
     padding: 2rem 1.5rem;
+  }
+  
+  .filtros {
+    padding: 20px;
+  }
+  
+  .filtros > div {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .input-busqueda,
+  .select-categoria {
+    min-width: auto;
+    width: 100%;
   }
   
   .tabla-actividades {
@@ -165,6 +358,10 @@
     padding: 1.5rem 1rem;
   }
   
+  .filtros {
+    padding: 15px;
+  }
+  
   .tabla-actividades {
     font-size: 0.8rem;
   }
@@ -184,7 +381,7 @@
     min-width: 90px;
   }
   
-  /* Para móviles muy pequeños, podríamos hacer la tabla scrolleable */
+  /* Para móviles muy pequeños, hacer la tabla más accesible */
   .tabla-actividades {
     display: block;
     overflow-x: auto;
@@ -239,153 +436,5 @@
   
   .tabla-actividades td:last-child:before {
     content: "";
-  }
-}
-
-/* Estados de carga/loading */
-.loading {
-  text-align: center;
-  color: var(--text-secondary);
-  padding: 2rem;
-  font-style: italic;
-}
-
-/* Animaciones suaves para cambios de estado */
-.tabla-actividades tbody tr {
-  animation: fadeInRow 0.3s ease-out;
-}
-
-@keyframes fadeInRow {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Contenedor de filtros */
-.filtros {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  gap: 20px;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 25px;
-  background: rgba(139, 124, 246, 0.15);
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 124, 246, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-/* Botón principal (Volver) */
-.btn.btn-primary {
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #8b7cf6, #667eea);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(139, 124, 246, 0.3);
-}
-
-.btn.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(139, 124, 246, 0.4);
-  background: linear-gradient(135deg, #7c6ef7, #5a67d8);
-}
-
-/* Campo de búsqueda */
-.input-busqueda {
-  padding: 14px 20px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  transition: all 0.3s ease;
-  outline: none;
-  width: 100%;
-}
-
-.input-busqueda::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.input-busqueda:focus {
-  border-color: #a78bfa;
-  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.3);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-/* FRANCO  */
-.select-categoria {
-  padding: 14px 20px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  font-size: 16px;
-  background: linear-gradient(135deg, #a78bfa, #c084fc);
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  outline: none;
-  min-width: 200px;
-  font-weight: 600;
-}
-
-.select-categoria option {
-  background: #4c1d95;
-  color: #fff;
-  padding: 10px;
-}
-
-.select-categoria:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(167, 139, 250, 0.4);
-}
-
-.select-categoria:focus {
-  border-color: #c084fc;
-  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.4);
-}
-
-/* Botón limpiar */
-.btn-limpiar {
-  padding: 14px 24px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  white-space: nowrap;
-}
-
-.btn-limpiar:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .filtros {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  .select-categoria {
-    min-width: auto;
   }
 }
