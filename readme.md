@@ -6,7 +6,7 @@ Este proyecto es una API REST para gestionar actividades deportivas, socios y ad
 
 El sistema está diseñado para manejar diferentes tipos de usuarios (socios y administradores) y brindar funcionalidades de autenticación, visualización y gestión de actividades.
 
-## 🏃‍♂️ Cómo correr el proyecto
+## 🤔 Cómo correr el proyecto
 
 Usar uno de los siguientes comandos dependiendo del sistema operativo para configurar la conexión a la base de datos. Se debe reemplazar `usuario`, `miclave123` y `basedatosnombre` con los valores reales.
 
