@@ -77,7 +77,6 @@ function ActividadRow({ actividad, onInscribir }) {
 }
 
 function ActividadesTable({ actividades }) {
-  console.log('ActividadesTable renderizado con:', actividades);
   if (!actividades || actividades.length === 0) {
     return <p className="main-subtitle">No hay actividades disponibles en este momento.</p>;
   }
@@ -158,7 +157,6 @@ function Actividades() {
 
   // Carga de actividades con filtros del backend
   useEffect(() => {
-    console.log('Cargando actividades con filtros:', filtrosAplicados);
     const fetchActividades = async () => {
       try {
         // Construir los query parameters usando filtrosAplicados
@@ -172,8 +170,6 @@ function Actividades() {
         params.append('page', actualPage.toString());
 
         const resp = await fetch(`http://localhost:8080/actividades?${params.toString()}`);
-        console.log('URL de actividades:', `http://localhost:8080/actividades?${params.toString()}`);
-        console.log('Respuesta de actividades:', resp);
         if (!resp.ok) throw new Error();
         
         const data = await resp.json();
@@ -181,12 +177,13 @@ function Actividades() {
           ...a,
           inscripto: inscripciones.includes(a.id)
         }));
-        console.log('Actividades obtenidas:', marcadas);
         setActividades(marcadas);
         setPages(data.pages || 1);
         setError('');
       } catch {
-        setError('No se pudieron cargar las actividades. Inténtalo más tarde.');
+        setActividades([]);
+        setPages(1);
+        setError('No se encontraron actividades con los filtros aplicados.');
       }
     };
 
