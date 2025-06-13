@@ -1,5 +1,3 @@
-import bcrypt from 'bcryptjs';
-
 export async function hashPassword(password) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
