@@ -115,7 +115,7 @@ function Actividades() {
   const [pages, setPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
   const [error, setError] = useState('');
-  
+
   // Estados para los filtros
   const [filtros, setFiltros] = useState({
     categoria: '',
@@ -124,7 +124,7 @@ function Actividades() {
     dia: '',
     horario: ''
   });
-  
+
   // Estados para la UI
   const [mostrarFiltrosAvanzados, setMostrarFiltrosAvanzados] = useState(false);
   const [filtrosAplicados, setFiltrosAplicados] = useState({
@@ -134,7 +134,7 @@ function Actividades() {
     dia: '',
     horario: ''
   });
-  
+
   const navigate = useNavigate();
 
   // Carga de inscripciones existentes
@@ -161,7 +161,7 @@ function Actividades() {
       try {
         // Construir los query parameters usando filtrosAplicados
         const params = new URLSearchParams();
-        
+
         if (filtrosAplicados.categoria) params.append('categoria', filtrosAplicados.categoria);
         if (filtrosAplicados.nombre) params.append('nombre', filtrosAplicados.nombre);
         if (filtrosAplicados.instructor) params.append('instructor', filtrosAplicados.instructor);
@@ -171,7 +171,7 @@ function Actividades() {
 
         const resp = await fetch(`http://localhost:8080/actividades?${params.toString()}`);
         if (!resp.ok) throw new Error();
-        
+
         const data = await resp.json();
         const marcadas = data.actividades.map((a) => ({
           ...a,
@@ -226,9 +226,9 @@ function Actividades() {
   return (
     <div className="actividades-container">
       <h1 className="main-title">Actividades Disponibles</h1>
-      
+
       {error && <div className="error-message">{error}</div>}
-      
+
       <div className="filtros">
         <button onClick={() => navigate('/home')} className="btn btn-primary">
           ← Volver a Home
@@ -274,7 +274,7 @@ function Actividades() {
         {mostrarFiltrosAvanzados && (
           <div>
             <h4>Filtros Avanzados</h4>
-            
+
             {/* Filtro por instructor */}
             <input
               type="text"

@@ -83,11 +83,12 @@
 
 /* Botón inscribirse - personalización del btn-secondary */
 .btn-inscripcion {
-  padding: 0.5rem 1rem !important;
-  font-size: 0.9rem !important;
-  min-height: auto !important;
-  margin: 0 !important;
-  width: 120px; /* Para que ambos textos se vean bien */
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  min-height: auto;
+  margin: 0;
+  width: 120px;
+  /* Para que ambos textos se vean bien */
 }
 
 /* Paginación */
@@ -125,14 +126,14 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.filtros > div {
+.filtros>div {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
 }
 
-.filtros > div > h4 {
+.filtros>div>h4 {
   width: 100%;
   color: var(--text-primary);
   margin: 0 0 10px 0;
@@ -163,7 +164,6 @@
 /* Botón secundario */
 .btn.btn-secondary {
   padding: 12px 24px;
-  background: rgba(255, 255, 255, 0.1);
   color: white;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
@@ -176,7 +176,7 @@
 }
 
 .btn.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
@@ -258,7 +258,7 @@
 }
 
 .btn-limpiar:hover {
-  background: rgba(255, 255, 255, 0.2);
+
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
@@ -282,6 +282,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -293,11 +294,11 @@
   .tabla-actividades {
     font-size: 0.9rem;
   }
-  
+
   .descripcion-col {
     max-width: 150px;
   }
-  
+
   .input-busqueda,
   .select-categoria {
     min-width: 150px;
@@ -308,45 +309,45 @@
   .actividades-container {
     padding: 2rem 1.5rem;
   }
-  
+
   .filtros {
     padding: 20px;
   }
-  
-  .filtros > div {
+
+  .filtros>div {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .input-busqueda,
   .select-categoria {
     min-width: auto;
     width: 100%;
   }
-  
+
   .tabla-actividades {
     font-size: 0.85rem;
   }
-  
+
   .tabla-actividades th,
   .tabla-actividades td {
     padding: 0.8rem 0.6rem;
   }
-  
+
   .descripcion-col {
     max-width: 120px;
   }
-  
+
   .btn-inscripcion {
-    padding: 0.4rem 0.8rem !important;
-    font-size: 0.8rem !important;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
     min-width: 100px;
   }
-  
+
   .pagination-buttons {
     gap: 0.5rem;
   }
-  
+
   .pagination-buttons span {
     font-size: 0.9rem;
     padding: 0.4rem 0.8rem;
@@ -357,37 +358,37 @@
   .actividades-container {
     padding: 1.5rem 1rem;
   }
-  
+
   .filtros {
     padding: 15px;
   }
-  
+
   .tabla-actividades {
     font-size: 0.8rem;
   }
-  
+
   .tabla-actividades th,
   .tabla-actividades td {
     padding: 0.6rem 0.4rem;
   }
-  
+
   .descripcion-col {
     max-width: 100px;
   }
-  
+
   .btn-inscripcion {
-    padding: 0.3rem 0.6rem !important;
-    font-size: 0.75rem !important;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
     min-width: 90px;
   }
-  
+
   /* Para móviles muy pequeños, hacer la tabla más accesible */
   .tabla-actividades {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
   }
-  
+
   .tabla-actividades thead,
   .tabla-actividades tbody,
   .tabla-actividades th,
@@ -395,13 +396,13 @@
   .tabla-actividades tr {
     display: block;
   }
-  
+
   .tabla-actividades thead tr {
     position: absolute;
     top: -9999px;
     left: -9999px;
   }
-  
+
   .tabla-actividades tbody tr {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
@@ -410,15 +411,15 @@
     background: var(--card-bg);
     backdrop-filter: blur(20px);
   }
-  
+
   .tabla-actividades td {
     border: none;
     position: relative;
-    padding-left: 35% !important;
+    padding-left: 35%;
     text-align: right;
     white-space: normal;
   }
-  
+
   .tabla-actividades td:before {
     content: attr(data-label) ": ";
     position: absolute;
@@ -428,12 +429,12 @@
     color: var(--text-primary);
     font-weight: 600;
   }
-  
+
   .tabla-actividades td:last-child {
     text-align: center;
-    padding-left: 1rem !important;
+    padding-left: 1rem;
   }
-  
+
   .tabla-actividades td:last-child:before {
     content: "";
   }
