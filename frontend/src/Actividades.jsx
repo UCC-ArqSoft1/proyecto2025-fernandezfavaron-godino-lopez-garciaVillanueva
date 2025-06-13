@@ -76,7 +76,7 @@ function ActividadRow({ actividad, onInscribir }) {
   );
 }
 
-function ActividadesTable({ actividades }) {
+function ActividadesTable({ actividades, onInscribir }) {
   if (!actividades || actividades.length === 0) {
     return <p className="main-subtitle">No hay actividades disponibles en este momento.</p>;
   }
@@ -101,7 +101,7 @@ function ActividadesTable({ actividades }) {
           <ActividadRow
             key={act.id}
             actividad={act}
-            onInscribir={(id, alreadyInscribed) => handleInscribir(id, alreadyInscribed)}
+            onInscribir={onInscribir}
           />
         ))}
       </tbody>
@@ -197,6 +197,19 @@ function Actividades() {
 
     fetchActividades();
   }, [actualPage, filtrosAplicados, inscripciones]);
+
+  // Nueva función para manejar inscripción y actualizar inscripciones
+  const handleInscribirYActualizar = async (id, alreadyInscribed) => {
+    const result = await handleInscribir(id, alreadyInscribed);
+    if (typeof result === 'number') {
+      setInscripciones((prev) =>
+        alreadyInscribed
+          ? prev.filter((inscId) => inscId !== id) // Desinscribir
+          : [...prev, id] // Inscribir
+      );
+    }
+    return result;
+  };
 
   // Función para manejar cambios en los filtros
   const handleFiltroChange = (campo, valor) => {
@@ -334,8 +347,10 @@ function Actividades() {
       </div>
 
       {/* Tabla de actividades */}
-      <ActividadesTable actividades={actividades} />
-
+      <ActividadesTable
+        actividades={actividades}
+        onInscribir={handleInscribirYActualizar}
+      />
       {/* Paginación */}
       <div className="pagination-buttons">
         <button
