@@ -150,6 +150,8 @@ function Actividades() {
         setInscripciones(await resp.json());
       } catch {
         setError("No se pudieron cargar tus inscripciones. Inténtalo más tarde.");
+        setInscripciones([]);
+        console.error("Error al cargar inscripciones");
       }
     };
     fetchInscripciones();
@@ -173,6 +175,12 @@ function Actividades() {
         if (!resp.ok) throw new Error();
 
         const data = await resp.json();
+        if (!inscripciones || inscripciones.length === 0) {
+          setActividades(data.actividades || []);
+          setPages(data.pages || 1);
+          setError('');
+          return;
+        }
         const marcadas = data.actividades.map((a) => ({
           ...a,
           inscripto: inscripciones.includes(a.id)
