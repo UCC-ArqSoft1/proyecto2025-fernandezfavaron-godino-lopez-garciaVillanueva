@@ -26,7 +26,7 @@ function ActividadRow({ actividad, onInscribir }) {
     setInscribed(alreadyInscribed);
   }, [alreadyInscribed]);
 
-  /** Formatea el horario "HH:MM" o devuelve “Inválido” */
+  /** Formatea el horario "HH:MM" o devuelve "Inválido" */
   const formatHorario = (h) => {
     if (!h) return 'No especificado';
     try {
@@ -77,6 +77,7 @@ function ActividadRow({ actividad, onInscribir }) {
 }
 
 function ActividadesTable({ actividades }) {
+  console.log('ActividadesTable renderizado con:', actividades);
   if (!actividades || actividades.length === 0) {
     return <p className="main-subtitle">No hay actividades disponibles en este momento.</p>;
   }
@@ -115,46 +116,27 @@ function Actividades() {
   const [pages, setPages] = useState(1);
   const [actualPage, setActualPage] = useState(1);
   const [error, setError] = useState('');
-  const [busqueda, setBusqueda] = useState('');
-  const [categoria, setCategoria] = useState('Todas');
+  
+  // Estados para los filtros
+  const [filtros, setFiltros] = useState({
+    categoria: '',
+    nombre: '',
+    instructor: '',
+    dia: '',
+    horario: ''
+  });
+  
+  // Estados para la UI
+  const [mostrarFiltrosAvanzados, setMostrarFiltrosAvanzados] = useState(false);
+  const [filtrosAplicados, setFiltrosAplicados] = useState({
+    categoria: '',
+    nombre: '',
+    instructor: '',
+    dia: '',
+    horario: ''
+  });
+  
   const navigate = useNavigate();
-
-  function filtrarActividades(lista, texto, categoriaSeleccionada) {
-    if (!lista || lista.length === 0) return [];
-
-    const textoLower = texto.toLowerCase();
-
-    return lista.filter((actividad) => {
-      let nombre = '';
-      let descripcion = '';
-      let instructor = '';
-      let categoriaAct = '';
-
-      if (actividad && actividad.nombre) {
-        nombre = actividad.nombre.toLowerCase();
-      }
-      if (actividad && actividad.descripcion) {
-        descripcion = actividad.descripcion.toLowerCase();
-      }
-      if (actividad && actividad.instructor) {
-        instructor = actividad.instructor.toLowerCase();
-      }
-      if (actividad && actividad.categoria) {
-        categoriaAct = actividad.categoria.toLowerCase();
-      }
-
-      const coincideTexto =
-        texto === '' ||
-        nombre.includes(textoLower) ||
-        descripcion.includes(textoLower) ||
-        instructor.includes(textoLower);
-
-      const coincideCategoria =
-        categoriaSeleccionada === 'Todas' || categoriaSeleccionada === actividad.categoria;
-
-      return coincideTexto && coincideCategoria;
-    });
-  }
 
   // Carga de inscripciones existentes
   useEffect(() => {
@@ -172,70 +154,182 @@ function Actividades() {
       }
     };
     fetchInscripciones();
-  }, [actualPage, navigate]);
+  }, [navigate]);
 
-  // Carga de actividades y marcación de ya inscritos
+  // Carga de actividades con filtros del backend
   useEffect(() => {
-    const fetchActividades = async (page = 1) => {
+    console.log('Cargando actividades con filtros:', filtrosAplicados);
+    const fetchActividades = async () => {
       try {
-        const params = new URLSearchParams({ page: String(page) });
-        const resp = await fetch(`http://localhost:8080/actividades?${params}`);
+        // Construir los query parameters usando filtrosAplicados
+        const params = new URLSearchParams();
+        
+        if (filtrosAplicados.categoria) params.append('categoria', filtrosAplicados.categoria);
+        if (filtrosAplicados.nombre) params.append('nombre', filtrosAplicados.nombre);
+        if (filtrosAplicados.instructor) params.append('instructor', filtrosAplicados.instructor);
+        if (filtrosAplicados.dia) params.append('dia', filtrosAplicados.dia);
+        if (filtrosAplicados.horario) params.append('horario', filtrosAplicados.horario);
+        params.append('page', actualPage.toString());
+
+        const resp = await fetch(`http://localhost:8080/actividades?${params.toString()}`);
+        console.log('URL de actividades:', `http://localhost:8080/actividades?${params.toString()}`);
+        console.log('Respuesta de actividades:', resp);
         if (!resp.ok) throw new Error();
+        
         const data = await resp.json();
         const marcadas = data.actividades.map((a) => ({
           ...a,
-          inscripto: inscripciones.includes(a.id) // <-- este campo es el que usas en ActividadRow
+          inscripto: inscripciones.includes(a.id)
         }));
+        console.log('Actividades obtenidas:', marcadas);
         setActividades(marcadas);
         setPages(data.pages || 1);
+        setError('');
       } catch {
         setError('No se pudieron cargar las actividades. Inténtalo más tarde.');
       }
     };
-    fetchActividades(actualPage);
-  }, [actualPage, inscripciones]);
 
-  // Filtrar las actividades
-  const actividadesFiltradas = filtrarActividades(actividades, busqueda, categoria);
+    fetchActividades();
+  }, [actualPage, filtrosAplicados, inscripciones]);
 
-  // JSX para renderizar:
+  // Función para manejar cambios en los filtros
+  const handleFiltroChange = (campo, valor) => {
+    setFiltros(prev => ({
+      ...prev,
+      [campo]: valor
+    }));
+  };
+
+  // Función para aplicar búsqueda
+  const aplicarBusqueda = () => {
+    setFiltrosAplicados({ ...filtros });
+    setActualPage(1);
+  };
+
+  // Función para limpiar filtros
+  const limpiarFiltros = () => {
+    setFiltros({
+      categoria: '',
+      nombre: '',
+      instructor: '',
+      dia: '',
+      horario: ''
+    });
+    setFiltrosAplicados({
+      categoria: '',
+      nombre: '',
+      instructor: '',
+      dia: '',
+      horario: ''
+    });
+    setActualPage(1);
+  };
+
   return (
     <div className="actividades-container">
-      {/* Filtros */}
       <h1 className="main-title">Actividades Disponibles</h1>
+      
+      {error && <div className="error-message">{error}</div>}
+      
       <div className="filtros">
         <button onClick={() => navigate('/home')} className="btn btn-primary">
           ← Volver a Home
         </button>
-        <input
-          type="text"
-          placeholder="Buscar actividad..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-          className="input-busqueda"
-        />
 
-        <select
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          className="select-categoria"
-        >
-          <option value="Todas">Todas las categorías </option>
-          <option value="Fitness">Fitness</option>
-          <option value="Yoga">Yoga</option>
-          <option value="Natación">Natación</option>
-        </select>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+          {/* Filtro principal por nombre - siempre visible */}
+          <input
+            type="text"
+            placeholder="Buscar por nombre..."
+            value={filtros.nombre}
+            onChange={(e) => handleFiltroChange('nombre', e.target.value)}
+            className="input-busqueda"
+            onKeyPress={(e) => e.key === 'Enter' && aplicarBusqueda()}
+          />
 
-        <button
-          onClick={() => { setBusqueda(''); setCategoria('Todas'); }}
-          className="btn-limpiar"
-        >
-          Limpiar
-        </button>
+          {/* Botón para mostrar/ocultar filtros avanzados */}
+          <button
+            onClick={() => setMostrarFiltrosAvanzados(!mostrarFiltrosAvanzados)}
+            className="btn btn-secondary"
+          >
+            {mostrarFiltrosAvanzados ? '▲ Ocultar filtros' : '▼ Más filtros'}
+          </button>
+
+          {/* Botón de búsqueda */}
+          <button
+            onClick={aplicarBusqueda}
+            className="btn btn-primary"
+          >
+            🔍 Buscar
+          </button>
+
+          {/* Botón limpiar */}
+          <button
+            onClick={limpiarFiltros}
+            className="btn-limpiar"
+          >
+            Limpiar
+          </button>
+        </div>
+
+        {/* Filtros avanzados - se muestran/ocultan */}
+        {mostrarFiltrosAvanzados && (
+          <div>
+            <h4>Filtros Avanzados</h4>
+            
+            {/* Filtro por instructor */}
+            <input
+              type="text"
+              placeholder="Buscar por instructor..."
+              value={filtros.instructor}
+              onChange={(e) => handleFiltroChange('instructor', e.target.value)}
+              className="input-busqueda"
+              onKeyPress={(e) => e.key === 'Enter' && aplicarBusqueda()}
+            />
+
+            {/* Filtro por categoría */}
+            <select
+              value={filtros.categoria}
+              onChange={(e) => handleFiltroChange('categoria', e.target.value)}
+              className="select-categoria"
+            >
+              <option value="">Todas las categorías</option>
+              <option value="Fitness">Fitness</option>
+              <option value="Yoga">Yoga</option>
+              <option value="Natación">Natación</option>
+            </select>
+
+            {/* Filtro por día */}
+            <select
+              value={filtros.dia}
+              onChange={(e) => handleFiltroChange('dia', e.target.value)}
+              className="select-categoria"
+            >
+              <option value="">Todos los días</option>
+              <option value="Lunes">Lunes</option>
+              <option value="Martes">Martes</option>
+              <option value="Miércoles">Miércoles</option>
+              <option value="Jueves">Jueves</option>
+              <option value="Viernes">Viernes</option>
+              <option value="Sábado">Sábado</option>
+              <option value="Domingo">Domingo</option>
+            </select>
+
+            {/* Filtro por horario */}
+            <input
+              type="time"
+              placeholder="Horario"
+              value={filtros.horario}
+              onChange={(e) => handleFiltroChange('horario', e.target.value)}
+              className="input-busqueda"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Tu tabla de actividades */}
-      <ActividadesTable actividades={actividadesFiltradas} />
+      {/* Tabla de actividades */}
+      <ActividadesTable actividades={actividades} />
 
       {/* Paginación */}
       <div className="pagination-buttons">
@@ -262,4 +356,3 @@ function Actividades() {
 }
 
 export default Actividades;
-
