@@ -5,6 +5,17 @@ Este proyecto es una API REST para gestionar actividades deportivas, socios y ad
 ## 📚 Descripción
 
 El sistema está diseñado para manejar diferentes tipos de usuarios (socios y administradores) y brindar funcionalidades de autenticación, visualización y gestión de actividades.
+# Como correr el proyecto 
+Usar uno de los siguientes comandos dependiendo el sistema operativo el que se encuentre para correr el proyecto, debe colocar el usuario, contraseña y el nombre de la base de datos
+	Linux
+	export DB_DSN="usuario:miclave123@tcp(127.0.0.1:3306)/basedatosnombre?charset=utf8mb4&parseTime=True&loc=Local"
+	Windows Powershell
+	setx DB_DSN "usuario:miclave123@tcp(127.0.0.1:3306)/basedatosnombre?charset=utf8mb4&parseTime=True&loc=Local"
+ Luego abrir dos terminales, abrir una terminal para el backend y otra para el frontend en sus respectivas carpetas,
+ En el backend ejecutar: go run main.go
+ En el frontend ejecutar: 
+ npm install
+ npm run dev
 
 ## 🚀 Endpoints
 
@@ -85,3 +96,4 @@ type Inscripcion struct {
     FechaInscripcion time.Time `gorm:"autoCreateTime" json:"fecha_inscripcion"`
 }
 ```
+# Como correr el proyecto 
