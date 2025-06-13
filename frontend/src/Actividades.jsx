@@ -201,12 +201,19 @@ function Actividades() {
   // Nueva función para manejar inscripción y actualizar inscripciones
   const handleInscribirYActualizar = async (id, alreadyInscribed) => {
     const result = await handleInscribir(id, alreadyInscribed);
-    if (typeof result === 'number') {
-      setInscripciones((prev) =>
-        alreadyInscribed
-          ? prev.filter((inscId) => inscId !== id) // Desinscribir
-          : [...prev, id] // Inscribir
-      );
+    if (!inscripciones || inscripciones.length === 0) {
+      if (typeof result === 'number') {
+        setInscripciones([id]); // Si no hay inscripciones, inicializar con la actual
+      }
+    }
+    else {
+      if (typeof result === 'number') {
+        setInscripciones((prev) =>
+          alreadyInscribed
+            ? prev.filter((inscId) => inscId !== id) // Desinscribir
+            : [...prev, id] // Inscribir
+        );
+      }
     }
     return result;
   };
