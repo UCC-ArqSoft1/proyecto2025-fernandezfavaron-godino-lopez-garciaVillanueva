@@ -248,3 +248,87 @@ func GetInscripciones(contexto *gin.Context) {
 
 	contexto.JSON(http.StatusOK, inscripciones)
 }
+
+func EliminarActividad(contexto *gin.Context) {
+	if !contexto.GetBool("isAdmin") {
+		contexto.JSON(http.StatusForbidden, gin.H{"error": "No tienes permisos"})
+		return
+	}
+
+	ids := contexto.Param("id")
+	id64, err := strconv.ParseUint(ids, 10, 32)
+	if err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+	id := uint(id64)
+
+	if err := services.EliminarActividad(id); err != nil {
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	contexto.JSON(http.StatusOK, "Actividad eliminada correctamente")
+}
+
+func EditarActividad(contexto *gin.Context) {
+	isAdmin := contexto.GetBool("isAdmin")
+	if !isAdmin {
+		contexto.JSON(http.StatusForbidden, gin.H{"error": "De aca no pasas flaquito"})
+		return
+	}
+	//hay que borrar los de aca no pasas flaquito
+	ids := contexto.Param("id")
+	id64, err := strconv.ParseUint(ids, 10, 32) // trasnforma el string en numero uint de base 10 y tamaño 32
+	if err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+	id := uint(id64)
+
+	var nueva domain.Actividad
+	err = contexto.ShouldBindJSON(&nueva)
+	if err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+
+	err = services.EditarActividad(id, nueva)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	contexto.JSON(http.StatusOK, gin.H{
+		"mensaje":   "Actividad editada correctamente",
+		"actividad": nueva,
+	})
+}
+
+func CrearActividad(contexto *gin.Context) {
+	isAdmin := contexto.GetBool("isAdmin")
+	if !isAdmin {
+		contexto.JSON(http.StatusForbidden, gin.H{"error": "No tienes permisos"})
+		return
+	}
+
+	var nueva domain.Actividad
+
+	err := contexto.ShouldBindJSON(&nueva)
+	if err != nil {
+		contexto.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+
+	id, err := services.CreateActividad(&nueva)
+	if err != nil {
+		contexto.JSON(http.StatusInternalServerError, gin.H{"error": "No se pudo crear la actividad"})
+		return
+	}
+
+	nueva.ID = id
+	contexto.JSON(http.StatusOK, gin.H{
+		"mensaje":   "Actividad creada correctamente",
+		"actividad": nueva,
+	})
+}

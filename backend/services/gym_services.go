@@ -160,7 +160,7 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 	if page > 10 || page < 1 {
 		page = 1
 	} //Por que 20? Porque ddos, se puede aumentar sin afectar el rendimiento incluso bajo ddos pero no me parece necesario mas de 2000 actividades.
-
+	// por los jijasos
 	var actividadesDTO []domain.ActividadDTO
 	err := query.Limit(defaultLimit).Offset((page - 1) * defaultLimit).Find(&actividades).Error
 	for _, actividad := range actividades {
@@ -204,4 +204,46 @@ func GetActividadesByUsuarioIDOnlyIDs(id uint) ([]uint, error) {
 		ids = append(ids, inscripcion.IDActividad)
 	}
 	return ids, nil
+}
+
+func CreateActividad(u *domain.Actividad) (uint, error) {
+	err := database.DB.Create(&u).Error
+	return u.ID, err
+}
+
+func EditarActividad(id uint, nuevaActividad domain.Actividad) error {
+	var actividad domain.Actividad
+	err := database.DB.First(&actividad, id).Error
+	if err != nil {
+		return errors.New("error: no se encontró la actividad")
+	}
+	actividad.Nombre = nuevaActividad.Nombre
+	actividad.Descripcion = nuevaActividad.Descripcion
+	actividad.Dia = nuevaActividad.Dia
+	actividad.Horario = nuevaActividad.Horario
+	actividad.Duracion = nuevaActividad.Duracion
+	actividad.Cupos = nuevaActividad.Cupos
+	actividad.Categoria = nuevaActividad.Categoria
+	actividad.Instructor = nuevaActividad.Instructor
+	actividad.FotoURL = nuevaActividad.FotoURL
+	err = database.DB.Save(&actividad).Error
+	if err != nil {
+		return errors.New("error: no se pudo actualizar la actividad")
+	}
+
+	return nil
+}
+
+func EliminarActividad(id uint) error {
+	var actividad domain.Actividad
+	err := database.DB.First(&actividad, id).Error
+	if err != nil {
+		return errors.New("error: no se encontró la actividad")
+	}
+	// Buscar arriba y despues elimina mas tarde :D
+	err = database.DB.Delete(&actividad).Error
+	if err != nil {
+		return errors.New("error: no se pudo eliminar la actividad")
+	}
+	return nil
 }
