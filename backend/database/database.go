@@ -4,6 +4,7 @@ import (
 	"Proyecto/domain"
 	"fmt"
 	"os"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -12,7 +13,6 @@ import (
 var DB *gorm.DB
 
 func ConectarBD() {
-
 	/* Capaz tenemos que usar sqlite para implementar esto mas facilmente.
 	Esto lee la variable de entorno de DB_DSN para que podamos conectar cada uno a su base de datos en test. Y no usar sqlite
 	Linux
@@ -26,7 +26,16 @@ func ConectarBD() {
 	}
 
 	var err error
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	for i := 1; i <= 20; i++ {
+		DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		if err == nil {
+			break
+		}
+		fmt.Printf("⏳ Esperando conexión con la base de datos (intento %d/20): %s\n", i, err.Error())
+		time.Sleep(3 * time.Second)
+	}
+
 	if err != nil {
 		panic("❌ Error al conectar con la base de datos: " + err.Error())
 	}
