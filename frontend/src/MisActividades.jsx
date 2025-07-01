@@ -61,7 +61,7 @@ function MisActividadesTable({ actividades,setActividades, mensajeSinActividades
                     console.error(result);
                   }
                 })}
-                class="btn btn-secondary btn-inscripcion"
+                class="btn btn-primary"
                 >
                 Desinscribirse
               </button>

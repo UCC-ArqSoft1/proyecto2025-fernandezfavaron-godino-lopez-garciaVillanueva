@@ -160,7 +160,6 @@ func GetActividades(categoria, nombre, instructor, dia, horario string, page int
 	if page > 10 || page < 1 {
 		page = 1
 	} //Por que 20? Porque ddos, se puede aumentar sin afectar el rendimiento incluso bajo ddos pero no me parece necesario mas de 2000 actividades.
-	// por los jijasos
 	var actividadesDTO []domain.ActividadDTO
 	err := query.Limit(defaultLimit).Offset((page - 1) * defaultLimit).Find(&actividades).Error
 	for _, actividad := range actividades {

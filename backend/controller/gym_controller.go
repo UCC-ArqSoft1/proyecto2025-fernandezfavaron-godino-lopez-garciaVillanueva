@@ -23,6 +23,7 @@ func authenticateUser(email string) *domain.Usuario {
 	return user
 }
 
+<<<<<<< HEAD
 // Generar token JWT
 type claims struct {
 	ID      uint
@@ -34,6 +35,20 @@ func generateJWTWithClaims(email string, idu uint, isadmin bool) (string, error)
 	claims := claims{
 		ID:      idu,
 		IsAdmin: isadmin,
+=======
+// En la estructura claims, asegurate de que el JSON tag coincida
+type claims struct {
+	ID      uint `json:"id"`
+	IsAdmin bool `json:"isAdmin"` // ← Agregá el tag JSON para consistencia
+	jwt.RegisteredClaims
+}
+
+// Y en la función generateJWTWithClaims también usa isAdmin consistentemente:
+func generateJWTWithClaims(email string, idu uint, isadmin bool) (string, error) {
+	claims := claims{
+		ID:      idu,
+		IsAdmin: isadmin, // ← Esto está bien
+>>>>>>> 942606b69374a47b72208f745b0592c6df28ec11
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   email,
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(48 * time.Hour)),
@@ -140,8 +155,15 @@ func ValidateToken(contexto *gin.Context) {
 		return
 	}
 
+<<<<<<< HEAD
 	contexto.Set("userID", token.Claims.(*claims).ID)
 	contexto.Set("email", token.Claims.(*claims).Subject) // Capaz innecesario
+=======
+	claims := token.Claims.(*claims)
+	contexto.Set("userID", claims.ID)
+	contexto.Set("email", claims.Subject)
+	contexto.Set("isAdmin", claims.IsAdmin) // ← ESTA LÍNEA FALTABA
+>>>>>>> 942606b69374a47b72208f745b0592c6df28ec11
 	contexto.Next()
 }
 
