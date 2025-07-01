@@ -244,19 +244,6 @@
 
 /* Botón limpiar */
 .btn-limpiar {
-<<<<<<< HEAD
-  padding: 14px 24px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  white-space: nowrap;
-=======
     padding: 14.9px 25px;
     font-size: 22px;
     font-weight: 700;
@@ -270,7 +257,6 @@
     box-shadow: 0 4px 15px rgba(139, 124, 246, 0.3);
     white-space: nowrap;
     backdrop-filter: blur(10px);
->>>>>>> 942606b69374a47b72208f745b0592c6df28ec11
 }
 
 .btn-limpiar:hover {
@@ -454,9 +440,6 @@
   .tabla-actividades td:last-child:before {
     content: "";
   }
-<<<<<<< HEAD
-}
-=======
 }
 
 
@@ -546,8 +529,9 @@ Nuevo boton:
   border-radius: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;      /* Limita la altura máxima al 80% de la ventana */
+  overflow-y: auto;      /* Agrega scroll vertical si es necesario */
 }
-
 /* Títulos */
 .modal-content h2 {
   font-size: 28px;
@@ -645,4 +629,3 @@ Nuevo boton:
 
   box-shadow: 0 2px 6px 0 #15163350;
 }
->>>>>>> 942606b69374a47b72208f745b0592c6df28ec11

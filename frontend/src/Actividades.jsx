@@ -651,19 +651,21 @@ useEffect(() => {
             {mostrarFiltrosAvanzados ? '▲ Ocultar filtros' : '▼ Más filtros'}
           </button>
 
-          <button
-            onClick={aplicarBusqueda}
-            className="btn btn-primary"
-          >
-            🔍 Buscar
-          </button>
+<button
+  onClick={aplicarBusqueda}
+  className="btn btn-primary"
+>
+  Buscar
+</button>
 
-          <button
-            onClick={limpiarFiltros}
-            className="btn-limpiar"
-          >
-            Limpiar
-          </button>
+<button
+  onClick={limpiarFiltros}
+  className="btn-limpiar"
+>
+  Limpiar
+</button>
+
+          
         </div>
 
         {mostrarFiltrosAvanzados && (
