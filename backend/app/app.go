@@ -29,11 +29,8 @@ func StartApp() {
 	router.GET("/inscripciones", controller.ValidateToken, controller.GetInscripciones)
 	router.POST("/inscripcion", controller.ValidateToken, controller.Inscripcion)
 	router.POST("/unscripcion", controller.ValidateToken, controller.Unscripcion)
-	router.POST("/actividad", controller.CrearActividad)
-	router.PUT("/actividad/:id", controller.EditarActividad)
-	router.DELETE("/actividad/:id", controller.EliminarActividad)
 	router.POST("/actividades", controller.ValidateToken, controller.CrearActividad)
 	router.PUT("/actividades/:id", controller.ValidateToken, controller.EditarActividad)
 	router.DELETE("/actividades/:id", controller.ValidateToken, controller.EliminarActividad)
-
+	router.Run(":8080")
 }
