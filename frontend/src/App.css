@@ -1,0 +1,237 @@
+/* Fondo y cuerpo general */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1e1e2f, #3a3a5c);
+  background-size: cover;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem; /* Añadido para evitar que toque los bordes en móviles */
+}
+
+/* Contenedor principal */
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Contenedor de login y registro - MEJORADO */
+.login-container,
+.register-container {
+  background-color: rgba(43, 43, 64, 0.95);
+  padding: 3rem; /* Aumentado el padding */
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  max-width: 450px; /* Aumentado de 520px a 650px */
+  min-width: 350px; /* Añadido ancho mínimo */
+  box-sizing: border-box;
+  backdrop-filter: blur(10px); /* Efecto glassmorphism */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Formularios internos */
+.login-form,
+.register-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Aumentado el espacio entre elementos */
+}
+
+/* Títulos - MEJORADOS */
+.login-form h2,
+.register-container h2 {
+  color: #00d1b2;
+  text-align: center;
+  font-size: 2.2rem; /* Aumentado el tamaño */
+  margin-bottom: 1rem; /* Más espacio debajo */
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Inputs - MEJORADOS */
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  padding: 1rem 1.2rem; /* Más padding para mayor comodidad */
+  font-size: 1.1rem; /* Texto más grande */
+  border: none;
+  border-radius: 10px; /* Bordes más redondeados */
+  outline: none;
+  background-color: #44445c;
+  color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  min-height: 50px; /* Altura mínima para mejor usabilidad */
+}
+
+/* Estados de focus e interacción */
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+  background-color: #525270;
+  border-color: #00d1b2;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 209, 178, 0.2);
+}
+
+input::placeholder {
+  color: #b0b0cc;
+  font-size: 1rem;
+}
+
+/* Botón estilo slice - MEJORADO */
+button.slice {
+  --c1: #202020;
+  --c2: #00a1b7;
+  --size-letter: 18px; /* Reducido ligeramente para mejor proporción */
+  padding: 1rem 1.5rem; /* Más padding */
+  font-size: var(--size-letter);
+  background-color: transparent;
+  border: calc(var(--size-letter) / 6) solid var(--c2);
+  border-radius: 10px; /* Más redondeado */
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: 300ms cubic-bezier(0.83, 0, 0.17, 1);
+  width: 100%;
+  min-height: 55px; /* Altura mínima más grande */
+  box-sizing: border-box;
+  margin-top: 0.5rem; /* Espacio adicional arriba */
+}
+
+/* Texto centrado y con ancho 100% */
+button.slice > .text {
+  display: block;
+  text-align: center;
+  font-weight: 700;
+  color: var(--c2);
+  position: relative;
+  z-index: 1;
+  transition: color 700ms cubic-bezier(0.83, 0, 0.17, 1);
+  width: 100%;
+  font-size: 1.1rem; /* Texto del botón más grande */
+}
+
+/* Fondo animado */
+button.slice::after {
+  content: "";
+  width: 0;
+  height: 500%; 
+  position: absolute;
+  translate: -50% -50%;
+  inset: 50%;
+  rotate: 30deg;
+  background-color: var(--c2);
+  transition: 1000ms cubic-bezier(0.83, 0, 0.17, 1);
+  z-index: 0;
+}
+
+/* Hover: expandir fondo y cambiar color */
+button.slice:hover > .text {
+  color: var(--c1);
+}
+
+button.slice:hover::after {
+  width: 140%;
+}
+
+button.slice:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 161, 183, 0.3);
+}
+
+/* Clic: feedback visual */
+button.slice:active {
+  scale: 0.98;
+  filter: brightness(0.9);
+  transform: translateY(0);
+}
+
+/* Mensajes de error - MEJORADOS */
+.error {
+  color: #ff6b6b;
+  font-weight: bold;
+  font-size: 1rem; /* Texto más grande */
+  text-align: center;
+  padding: 0.8rem;
+  background-color: rgba(255, 107, 107, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid #ff6b6b;
+}
+
+/* Enlaces - MEJORADOS */
+.login-form p,
+.register-container p {
+  font-size: 1rem; /* Texto más grande */
+  color: #ccccdd;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.login-form a,
+.register-container a {
+  color: #00d1b2;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-form a:hover,
+.register-container a:hover {
+  text-decoration: underline;
+  color: #00f5d4;
+  text-shadow: 0 2px 4px rgba(0, 245, 212, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-container,
+  .register-container {
+    padding: 2rem;
+    max-width: 400px;
+    margin: 1rem;
+  }
+  
+  .login-form h2,
+  .register-container h2 {
+    font-size: 1.8rem;
+  }
+  
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+  
+  button.slice {
+    min-height: 50px;
+    padding: 0.8rem 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 0.5rem;
+  }
+  
+  .login-container,
+  .register-container {
+    padding: 1.5rem;
+    min-width: 280px;
+    max-width: 350px;
+  }
+  
+  .login-form h2,
+  .register-container h2 {
+    font-size: 1.6rem;
+  }
+}
