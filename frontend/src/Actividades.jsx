@@ -636,7 +636,7 @@ useEffect(() => {
       {error && <div className="error-message">{error}</div>}
 
       <div className="filtros">
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+        <div>
           <button onClick={() => navigate('/home')} className="btn btn-primary">
             ← Volver a Home
           </button>
@@ -651,7 +651,7 @@ useEffect(() => {
           )}
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+        <div>
           <input
             type="text"
             placeholder="Buscar por nombre..."
@@ -751,7 +751,7 @@ useEffect(() => {
         >
           ← Anterior
         </button>
-        <span style={{ margin: '0 10px' }}>
+        <span>
           Página {actualPage} de {pages}
         </span>
         <button
