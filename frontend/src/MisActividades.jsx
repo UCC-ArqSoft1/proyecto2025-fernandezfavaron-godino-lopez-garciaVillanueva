@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import './Home.css';
-import './Actividades.css';
+import './styles/Home.css';
+import './styles/Actividades.css';
 import './Inscripcion.jsx'
 import handleInscribir from "./Inscripcion.jsx";
 // Componente específico para mostrar las actividades del usuario (sin botón de inscribirse)

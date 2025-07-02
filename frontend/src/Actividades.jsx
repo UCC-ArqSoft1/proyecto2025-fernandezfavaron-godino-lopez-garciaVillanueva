@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Home.css';
-import './Actividades.css';
+import './styles/Home.css';
+import './styles/Actividades.css';
 import handleInscribir from './Inscripcion';
 
 // Componente FormularioActividad (necesario para los modales)
