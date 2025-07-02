@@ -6,21 +6,10 @@ Este proyecto es una API REST para gestionar actividades deportivas, socios y ad
 
 El sistema está diseñado para manejar diferentes tipos de usuarios (socios y administradores) y brindar funcionalidades de autenticación, visualización y gestión de actividades.
 
-<<<<<<< HEAD
-## 🤔 Cómo correr el proyecto
-=======
 ## Cómo correr el proyecto
->>>>>>> 942606b69374a47b72208f745b0592c6df28ec11
 
-Usar uno de los siguientes comandos dependiendo del sistema operativo para configurar la conexión a la base de datos. Se debe reemplazar `usuario`, `miclave123` y `basedatosnombre` con los valores reales.
-
-Linux:  
-`export DB_DSN="usuario:miclave123@tcp(127.0.0.1:3306)/basedatosnombre?charset=utf8mb4&parseTime=True&loc=Local"`
-
-Windows PowerShell:  
-`setx DB_DSN "usuario:miclave123@tcp(127.0.0.1:3306)/basedatosnombre?charset=utf8mb4&parseTime=True&loc=Local"`
-
-Luego abrir dos terminales, una para el backend y otra para el frontend. En la terminal del backend ejecutar: `go run main.go`. En la terminal del frontend ejecutar: `npm install` y luego `npm run dev`.
+Ejecutar el docker-compose.yml, si el backend se cierra por abrirse antes que la base de datos hay que volver a abrirlo cuando
+la misma ya este corriendo.
 
 ## 🚀 Endpoints
 
