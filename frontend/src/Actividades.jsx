@@ -613,7 +613,21 @@ useEffect(() => {
   };
 
   return (
+    <>
+    <button
+      onClick={() => {
+        if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+          localStorage.removeItem("token");
+          navigate("/");
+        }
+      }}
+      className="btn-logout"
+    >
+      <span className="text">Cerrar Sesión</span>
+    </button>
+    
     <div className="actividades-container">
+      
       <h1 className="main-title">Actividades Disponibles</h1>
 
       {error && <div className="error-message">{error}</div>}
@@ -769,6 +783,7 @@ useEffect(() => {
 )}
 
     </div>
+    </>
   );
 }
 

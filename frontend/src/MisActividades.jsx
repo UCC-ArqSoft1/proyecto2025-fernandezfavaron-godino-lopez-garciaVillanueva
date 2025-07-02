@@ -111,6 +111,19 @@ const MisActividades = () => {
   };
 
   return (
+    <>
+    <button
+      onClick={() => {
+        if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+          localStorage.removeItem("token");
+          navigate("/");
+        }
+      }}
+      className="btn-logout"
+    >
+      <span className="text">Cerrar Sesión</span>
+    </button>
+    
     <div className="mis-actividades-container">
       <h1 className="main-title">Mis Actividades</h1>
       
@@ -129,6 +142,7 @@ const MisActividades = () => {
         mensajeSinActividades="No tienes actividades registradas." 
       />
     </div>
+    </>
   );
 };
 
