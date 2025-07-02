@@ -19,6 +19,8 @@ services:
       - "8080:8080"
     env_file:
       - .env
+    volumes:
+      - ./.env:/app/.env
     depends_on:
       - mysql-gimnasio
 

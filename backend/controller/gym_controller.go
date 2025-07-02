@@ -4,6 +4,7 @@ import (
 	"Proyecto/domain"
 	"Proyecto/services"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -11,7 +12,15 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwt_tokenprivado = []byte("soy-la-contrasena-secreta")
+var jwt_tokenprivado []byte
+
+func init() {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		panic("JWT_SECRET no está definido en las variables de entorno")
+	}
+	jwt_tokenprivado = []byte(secret)
+}
 
 // Consultar base de datos de Franco xD
 func authenticateUser(email string) *domain.Usuario {
