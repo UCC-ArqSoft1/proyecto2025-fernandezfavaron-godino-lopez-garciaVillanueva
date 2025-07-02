@@ -32,9 +32,9 @@ export default function Home() {
       </button>
 
       <main className="main-content">
-        <h1 className="main-title">Bienvenido al Centro Deportivo</h1>
+        <h1 className="main-title">¡Bienvenido al Centro Deportivo!</h1>
         <p className="main-subtitle">
-          Gestiona tus actividades deportivas de forma inteligente
+          Gestiona tus actividades deportivas de forma inteligente.
         </p>
 
         <div className="button-container">
