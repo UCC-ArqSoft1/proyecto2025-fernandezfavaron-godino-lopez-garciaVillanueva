@@ -63,6 +63,9 @@ const handleSubmit = (e) => {
     <form onSubmit={handleSubmit} className="modal-content">
       
       {/* Nombre */}
+      <h2 className="form-group">
+      {actividad ? 'Editar Actividad' : 'Crear Actividad'}
+      </h2>
       <div className="form-group">
         <label htmlFor="nombre" className="form-label">Nombre:</label>
         <input
